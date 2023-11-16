@@ -1,5 +1,8 @@
 # Spring Boot Data Service
 
+Add AOP support?
+Add Spring Web dependency?
+
 ## Spring Initializr
 
 https://start.spring.io/
