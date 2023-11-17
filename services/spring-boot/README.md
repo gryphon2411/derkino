@@ -25,3 +25,4 @@ https://start.spring.io/
   - Spring Web
   - Spring Rest Docs
   - Spring Data MongoDB
+  - Spring Data Redis (Access+Driver)
