@@ -1,13 +1,12 @@
 # Spring Boot Data Service
 
-Add AOP support?
-Add Spring Web dependency?
+Add AOP support
 
 ## Spring Initializr
 
 https://start.spring.io/
 
-- Project: Gradle - Groovy
+- Project: Maven
 
 - Language: Java
 
@@ -23,4 +22,6 @@ https://start.spring.io/
   - Java: 17
 
 - Dependencies:
+  - Spring Web
+  - Spring Rest Docs
   - Spring Data MongoDB
