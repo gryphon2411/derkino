@@ -22,3 +22,10 @@ kafka
 postgres
 
 elasticsearch
+
+## Acknowledgment
+
+Information courtesy of
+IMDb
+(https://www.imdb.com).
+Used with permission.
