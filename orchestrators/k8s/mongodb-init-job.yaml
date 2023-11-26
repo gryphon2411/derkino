@@ -14,6 +14,18 @@ spec:
         - run.py
         - mongoinit.py
         env:
-        - name: MONGO_URI
-          value: mongodb://root:X6d9r2SgJ8xQgpGL@mongodb.mongodb-system
+        - name: MONGO_URI_FORMAT
+          value: mongodb
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-root-user-credentials
+              key: username
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-root-user-credentials
+              key: password
+        - name: MONGO_HOST
+          value: mongodb.mongodb-system
       restartPolicy: Never

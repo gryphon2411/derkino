@@ -34,7 +34,13 @@ def extract_csv_from_archive(archive_file_path, csv_file_path):
 
 
 def read_csv_data_and_insert_to_database(csv_file_path):
-    client = MongoClient(os.getenv('MONGO_URI'))
+    connection_uri = "{uri_format}://{username}:{password}@{host}".format(
+        uri_format=os.getenv('MONGO_URI_FORMAT'),
+        username=os.getenv('MONGO_USERNAME'),
+        password=os.getenv('MONGO_PASSWORD'),
+        host=os.getenv('MONGO_HOST')
+    )
+    client = MongoClient(connection_uri)
     client.server_info()  # Blocks until the connection is ready
     db = client.imdb
     write_command_batch_limit_size = 100000  # https://www.mongodb.com/docs/manual/reference/limits/#mongodb-limit-Write-Command-Batch-Limit-Size

@@ -4,6 +4,18 @@ metadata:
   name: mongodb-system
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-root-user-credentials
+  namespace: mongodb-system
+type: Opaque
+data:
+  # echo -n root | base64
+  username: cm9vdA==
+  # echo -n X6d9r2SgJ8xQgpGL | base64
+  password: WDZkOXIyU2dKOHhRZ3BHTA==
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: mongodb
@@ -39,9 +51,15 @@ spec:
         - containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
-          value: root
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-root-user-credentials
+              key: username
         - name: MONGO_INITDB_ROOT_PASSWORD
-          value: X6d9r2SgJ8xQgpGL
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-root-user-credentials
+              key: password
         volumeMounts:
         - name: mongodb-persistent-storage
           mountPath: /data/db
