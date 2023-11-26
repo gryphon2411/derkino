@@ -12,6 +12,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the jobs source code to the container
 COPY . .
-
-# Define the command to run the jobs when the container starts
-CMD ["python", "run.py"]

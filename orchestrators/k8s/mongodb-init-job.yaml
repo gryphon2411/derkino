@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-init
+  namespace: mongodb-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: imdb-jobs
+        image: gryphon2411/imdb-jobs:latest
+        args:
+        - python
+        - run.py
+        - mongoinit.py
+        env:
+        - name: MONGO_URI
+          value: mongodb://root:X6d9r2SgJ8xQgpGL@mongodb.mongodb-system
+      restartPolicy: Never
