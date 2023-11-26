@@ -7,7 +7,7 @@ on:
     branches:
       - master
     paths:
-      - jobs/**
+      - imdb-jobs/**
 
 # Creates a job ID (build) and declares the type of machine that the job should run on.
 jobs:
@@ -34,10 +34,10 @@ jobs:
         uses: docker/build-push-action@v4.1.1
         with:
           # The build context (https://docs.docker.com/build/building/context/), default is "."
-          context: jobs/
+          context: imdb-jobs/
           # Filepath to the Dockerfile, default is "./Dockerfile"
-          file: jobs/Dockerfile
+          file: imdb-jobs/Dockerfile
           # Tells the action to upload the image to a registry after building it.
           push: true
           # Tags that specify where to push the image.
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/jobs:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/imdb-jobs:latest
