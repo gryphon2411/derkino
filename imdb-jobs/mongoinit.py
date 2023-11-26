@@ -55,8 +55,11 @@ def read_csv_data_and_insert_to_database(csv_file_path):
                 csv_data_read_counter = 0
 
             for cell_key, cell_value in row.items():
-                if cell_value and "\\N" in cell_value:
-                    row[cell_key] = None
+                if cell_value:
+                    if "\\N" in cell_value:
+                        row[cell_key] = None
+                    elif cell_key == "genres" and "," in cell_value:
+                        row[cell_key] = cell_value.split(",")
 
             csv_data.append(row)
             csv_data_size += sys.getsizeof(row)
