@@ -1,6 +1,6 @@
-# Dikino
+# Derkino
 
-Dikino (Yiddish; די קינאָ, "The Movies") is a personal educational project for learning various technologies.
+Derkino (Yiddish; דער קינאָ, "The cinema") is a personal educational project for learning various technologies in a theme of movies.
 
 # Components
 
