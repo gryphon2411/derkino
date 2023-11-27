@@ -24,7 +24,8 @@ spec:
   selector:
     app: mongodb
   ports:
-  - port: 27017
+  - name: default
+    port: 27017
     targetPort: 27017
   type: NodePort
 ---
@@ -48,7 +49,8 @@ spec:
       - name: mongodb
         image: mongo:latest
         ports:
-        - containerPort: 27017
+        - name: default
+          containerPort: 27017
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
@@ -61,11 +63,11 @@ spec:
               name: mongodb-root-user-credentials
               key: password
         volumeMounts:
-        - name: mongodb-persistent-storage
+        - name: mongodb-data
           mountPath: /data/db
   volumeClaimTemplates:
   - metadata:
-      name: mongodb-persistent-storage
+      name: mongodb-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
