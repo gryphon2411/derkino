@@ -62,7 +62,7 @@ def read_csv_data_and_insert_to_database(csv_file_path):
 
         for row in reader:
             if csv_data_read_counter >= write_command_batch_limit_size:
-                total_inserted_ids += insert_csv_data_to_database_2(csv_data, db)
+                total_inserted_ids += insert_csv_data_to_database(csv_data, db)
                 csv_data_read_counter = 0
 
             for cell_key, cell_value in row.items():
@@ -77,13 +77,13 @@ def read_csv_data_and_insert_to_database(csv_file_path):
             total_rows_read += 1
             csv_data_read_counter += 1
 
-        total_inserted_ids += insert_csv_data_to_database_2(csv_data, db)
+        total_inserted_ids += insert_csv_data_to_database(csv_data, db)
 
     logger.info(f"Read {total_rows_read:,} csv rows (data size {csv_data_size / 1000 / 1000 / 1000:.3f} gb).")
     logger.info(f'Inserted {total_inserted_ids:,} documents.')
 
 
-def insert_csv_data_to_database_2(csv_data, db):
+def insert_csv_data_to_database(csv_data, db):
     total_inserted_ids = len(db.title_basics.insert_many(csv_data).inserted_ids)
     csv_data.clear()
 
