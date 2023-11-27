@@ -22,5 +22,3 @@ kafka
 postgres
 
 elasticsearch
-
-## Acknowledgment
