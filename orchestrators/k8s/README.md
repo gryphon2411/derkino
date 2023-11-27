@@ -3,8 +3,8 @@
 ## Kubernetes
 
 ```bash
-kubectl apply -f orchestrators/k8s/mongodb-system.yaml
-kubectl apply -f orchestrators/k8s/mongodb-init-job.yaml
+kubectl apply -f orchestrators/k8s/mongodb-system.yaml && kubectl -n mongodb-system get pod -w
+kubectl apply -f orchestrators/k8s/mongodb-init-job.yaml && kkubectl -n mongodb-system get job -w
 ```
 
 ```bash
