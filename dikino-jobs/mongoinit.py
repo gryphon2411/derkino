@@ -17,6 +17,11 @@ logger = get_logger(Path(__file__).stem)
 def download_archive(archive_file_path):
     url = f'https://datasets.imdbws.com/{archive_file_path.name}'
     logger.info(f'Downloading {url} into {archive_file_path.parent.absolute()}...')
+    logger.info("""\
+    Information courtesy of
+    IMDb
+    (https://www.imdb.com).
+    Used with permission.""")
     response = requests.get(url, stream=True)
     with archive_file_path.open('wb') as file:
         shutil.copyfileobj(response.raw, file)
@@ -42,7 +47,7 @@ def read_csv_data_and_insert_to_database(csv_file_path):
     )
     client = MongoClient(connection_uri)
     client.server_info()  # Blocks until the connection is ready
-    db = client.imdb
+    db = client.dikino
     write_command_batch_limit_size = 100000  # https://www.mongodb.com/docs/manual/reference/limits/#mongodb-limit-Write-Command-Batch-Limit-Size
     total_inserted_ids = 0
     total_rows_read = 0
