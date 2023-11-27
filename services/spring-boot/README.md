@@ -13,11 +13,11 @@ https://start.spring.io/
 - Spring Boot: 3.1.5
 
 - Project Metadata:
-  - Group: io.dikino
+  - Group: io.derkino
   - Artifact: data_service
   - Name: data_service
-  - Description: Dikino Data Service
-  - Package name: io.dikino.data_service
+  - Description: derkino Data Service
+  - Package name: io.derkino.data_service
   - Packaging: Jar
   - Java: 17
 

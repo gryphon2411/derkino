@@ -7,8 +7,8 @@ spec:
   template:
     spec:
       containers:
-      - name: dikino-jobs
-        image: gryphon2411/dikino-jobs:latest
+      - name: derkino-jobs
+        image: gryphon2411/derkino-jobs:latest
         args:
         - python
         - run.py

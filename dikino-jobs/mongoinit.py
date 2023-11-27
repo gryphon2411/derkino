@@ -47,7 +47,7 @@ def read_csv_data_and_insert_to_database(csv_file_path):
     )
     client = MongoClient(connection_uri)
     client.server_info()  # Blocks until the connection is ready
-    db = client.dikino
+    db = client.derkino
     write_command_batch_limit_size = 100000  # https://www.mongodb.com/docs/manual/reference/limits/#mongodb-limit-Write-Command-Batch-Limit-Size
     total_inserted_ids = 0
     total_rows_read = 0
