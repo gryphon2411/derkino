@@ -1,6 +1,6 @@
 # Dikino
 
-https://developer.imdb.com/non-commercial-datasets/
+Dikino (Yiddish; די קינאָ, "The Movies") is an educational project for learning various technologies.
 
 # Components
 
@@ -24,8 +24,3 @@ postgres
 elasticsearch
 
 ## Acknowledgment
-
-Information courtesy of
-IMDb
-(https://www.imdb.com).
-Used with permission.
