@@ -11,18 +11,8 @@ $(kubectl -n mongodb-system get secret mongodb-root-user-credentials -o jsonpath
 $(kubectl -n mongodb-system get secret mongodb-root-user-credentials -o jsonpath='{.data.password}' | base64 --decode)@
 $(minikube -n mongodb-system service mongodb --url | sed 's/http:\/\///')" | tr -d '\n' && echo
 
-kubectl apply -f orchestrators/k8s/redis-system.yaml && kubectl -n redis-system get pod -w
-
-echo "redis-cli 
--h $(minikube -n redis-system service redis --url | cut -d'/' -f3 | cut -d':' -f1) 
--p $(minikube -n redis-system service redis --url | cut -d'/' -f3 | cut -d':' -f2)" | tr -d '\n' && echo
-
-PING
-
-FLUSHALL
-FLUSHDB
-
-INFO keyspace
-
-CLIENT LIST
+kubectl apply -f orchestrators/k8s/redis-stack-system.yaml && kubectl -n redis-stack-system get pod -w
+echo "default"
+kubectl -n redis-stack-system get secret redis-stack-default-user-pass -o jsonpath='{.data.password}' | base64 --decode
+minikube -n redis-stack-system service list
 ```
