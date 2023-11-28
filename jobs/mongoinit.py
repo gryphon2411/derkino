@@ -65,12 +65,7 @@ def read_csv_data_and_insert_to_database(csv_file_path):
                 total_inserted_ids += insert_csv_data_to_database(csv_data, db)
                 csv_data_read_counter = 0
 
-            for cell_key, cell_value in row.items():
-                if cell_value:
-                    if "\\N" in cell_value:
-                        row[cell_key] = None
-                    elif cell_key == "genres":
-                        row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
+            transform_csv_row_data(row)
 
             csv_data.append(row)
             csv_data_size += sys.getsizeof(row)
@@ -81,6 +76,19 @@ def read_csv_data_and_insert_to_database(csv_file_path):
 
     logger.info(f"Read {total_rows_read:,} csv rows (data size {csv_data_size / 1000 / 1000 / 1000:.3f} gb).")
     logger.info(f'Inserted {total_inserted_ids:,} documents.')
+
+
+def transform_csv_row_data(row):
+    for cell_key, cell_value in row.items():
+        if cell_value:
+            if "\\N" in cell_value:
+                row[cell_key] = None
+            elif cell_key == "genres":
+                row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
+            elif cell_key == "isAdult":
+                row[cell_key] = True if cell_value == 1 else False
+            elif cell_key == "runtimeMinutes" or "startYear" or "endYear":
+                row[cell_key] = int(cell_value)
 
 
 def insert_csv_data_to_database(csv_data, db):
