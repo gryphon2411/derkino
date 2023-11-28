@@ -87,7 +87,7 @@ def transform_csv_row_data(row):
                 elif cell_key == "genres":
                     row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
                 elif cell_key == "isAdult":
-                    row[cell_key] = True if cell_value == 1 else False
+                    row[cell_key] = True if cell_value == "1" else False
                 elif cell_key in ["runtimeMinutes", "startYear", "endYear"]:
                     row[cell_key] = int(cell_value) if cell_value.isdigit() else None
     except Exception:
