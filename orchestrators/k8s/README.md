@@ -11,6 +11,11 @@ $(kubectl -n mongodb-system get secret mongodb-root-user-credentials -o jsonpath
 $(kubectl -n mongodb-system get secret mongodb-root-user-credentials -o jsonpath='{.data.password}' | base64 --decode)@
 $(minikube -n mongodb-system service mongodb --url | sed 's/http:\/\///')" | tr -d '\n' && echo
 
+kubectl apply -f orchestrators/k8s/postgres-system.yaml && kubectl -n postgres-system get pod -w
+kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.username}' | base64 --decode
+kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.password}' | base64 --decode
+minikube -n postgres-system  service postgres --url
+
 kubectl apply -f orchestrators/k8s/redis-stack-system.yaml && kubectl -n redis-stack-system get pod -w
 echo "default"
 kubectl -n redis-stack-system get secret redis-stack-default-user-pass -o jsonpath='{.data.password}' | base64 --decode
