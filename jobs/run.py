@@ -9,7 +9,8 @@ def main():
 
     args = parser.parse_args()
 
-    subprocess.run(['python', args.job])
+    exit_code = subprocess.run(['python', args.job]).returncode
+    exit(exit_code)
 
 
 if __name__ == '__main__':

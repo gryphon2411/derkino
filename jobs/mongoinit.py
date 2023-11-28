@@ -79,16 +79,20 @@ def read_csv_data_and_insert_to_database(csv_file_path):
 
 
 def transform_csv_row_data(row):
-    for cell_key, cell_value in row.items():
-        if cell_value:
-            if "\\N" in cell_value:
-                row[cell_key] = None
-            elif cell_key == "genres":
-                row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
-            elif cell_key == "isAdult":
-                row[cell_key] = True if cell_value == 1 else False
-            elif cell_key == "runtimeMinutes" or "startYear" or "endYear":
-                row[cell_key] = int(cell_value)
+    try:
+        for cell_key, cell_value in row.items():
+            if cell_value:
+                if "\\N" in cell_value:
+                    row[cell_key] = None
+                elif cell_key == "genres":
+                    row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
+                elif cell_key == "isAdult":
+                    row[cell_key] = True if cell_value == 1 else False
+                elif cell_key in ["runtimeMinutes", "startYear", "endYear"]:
+                    row[cell_key] = int(cell_value) if cell_value.isdigit() else None
+    except Exception:
+        logger.exception(f"Row transform failed: {row}")
+        raise
 
 
 def insert_csv_data_to_database(csv_data, db):
@@ -113,23 +117,32 @@ def create_data_dir():
     return data_dir
 
 
-execution_start, process_start = time.perf_counter(), time.process_time()
+def main():
+    execution_start, process_start = time.perf_counter(), time.process_time()
 
-data_dir_ = create_data_dir()
+    data_dir_ = create_data_dir()
 
-archive_file_path_ = data_dir_ / 'title.basics.tsv.gz'
-csv_file_path_ = data_dir_ / 'data.csv'
+    archive_file_path_ = data_dir_ / 'title.basics.tsv.gz'
+    csv_file_path_ = data_dir_ / 'data.csv'
 
-download_archive(archive_file_path_)
-extract_csv_from_archive(archive_file_path_, csv_file_path_)
-read_csv_data_and_insert_to_database(csv_file_path_)
-delete_data_dir(data_dir_)
+    download_archive(archive_file_path_)
+    extract_csv_from_archive(archive_file_path_, csv_file_path_)
+    read_csv_data_and_insert_to_database(csv_file_path_)
+    delete_data_dir(data_dir_)
 
-execution_end, process_end = time.perf_counter(), time.process_time()
-execution_duration = execution_end - execution_start
-process_duration = process_end - process_start
-execution_minutes, execution_seconds = divmod(execution_duration, 60)
-process_minutes, process_seconds = divmod(process_duration, 60)
+    execution_end, process_end = time.perf_counter(), time.process_time()
+    execution_duration = execution_end - execution_start
+    process_duration = process_end - process_start
+    execution_minutes, execution_seconds = divmod(execution_duration, 60)
+    process_minutes, process_seconds = divmod(process_duration, 60)
 
-logger.info(f"Done. took {execution_minutes:0.0f}m {execution_seconds:0.0f}s "
-            f"({process_minutes:0.0f}m {process_seconds:0.0f}s processing)")
+    logger.info(f"Done. took {execution_minutes:0.0f}m {execution_seconds:0.0f}s "
+                f"({process_minutes:0.0f}m {process_seconds:0.0f}s processing)")
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception:
+        logger.exception("Job failed.")
+        exit(1)
