@@ -10,4 +10,5 @@ public interface TitleRepository extends MongoRepository<Title, String> {
     @Override
     @NonNull
     Optional<Title> findById(@NonNull String id);
+    Optional<Title> findByTitleConst(String titleConst);
 }
