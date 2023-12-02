@@ -1,6 +1,6 @@
 # Derkino
 
-Derkino (Yiddish; דער קינאָ, "The cinema") is a personal educational project for learning various technologies in a theme of movies.
+Derkino ("The cinema"), derived from Yiddish (דער קינאָ), represents a personal educational initiative focused on exploring various technologies within the context of a cinema.
 
 # Components
 
