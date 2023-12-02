@@ -19,6 +19,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SupportIcon from '@mui/icons-material/Support';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
+import { LocalMovies } from '@mui/icons-material';
 
 export const metadata = {
   title: 'Next.js App Router + Material UI v5',
@@ -31,6 +32,7 @@ const LINKS = [
   { text: 'Home', href: '/', icon: HomeIcon },
   { text: 'Starred', href: '/starred', icon: StarIcon },
   { text: 'Tasks', href: '/tasks', icon: ChecklistIcon },
+  { text: 'Titles', href: '/titles', icon: LocalMovies}
 ];
 
 const PLACEHOLDER_LINKS = [
