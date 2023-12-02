@@ -11,6 +11,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
@@ -19,7 +20,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SupportIcon from '@mui/icons-material/Support';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
-import { LocalMovies } from '@mui/icons-material';
 
 export const metadata = {
   title: 'Next.js App Router + Material UI v5',
@@ -32,7 +32,7 @@ const LINKS = [
   { text: 'Home', href: '/', icon: HomeIcon },
   { text: 'Starred', href: '/starred', icon: StarIcon },
   { text: 'Tasks', href: '/tasks', icon: ChecklistIcon },
-  { text: 'Titles', href: '/titles', icon: LocalMovies}
+  { text: 'Titles', href: '/titles', icon: LocalMoviesIcon }
 ];
 
 const PLACEHOLDER_LINKS = [
