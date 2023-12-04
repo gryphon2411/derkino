@@ -30,3 +30,4 @@ https://start.spring.io/
   - PostgreSQL Driver SQL
   - Spring Data Redis (Access+Driver)
   - Spring for RabbitMQ Messaging
+  - Spring for Apache Kafka Streams
