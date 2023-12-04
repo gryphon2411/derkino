@@ -20,4 +20,9 @@ kubectl apply -f orchestrators/k8s/redis-stack-system.yaml && kubectl -n redis-s
 echo "default"
 kubectl -n redis-stack-system get secret redis-stack-default-user-pass -o jsonpath='{.data.password}' | base64 --decode
 minikube -n redis-stack-system service list
+
+helm -n kafka-system install kafka orchestrators/k8s/charts/kafka --create-namespace
+helm -n kafka-system list
+kubectl -n kafka-system patch service kafka -p '{"spec": {"type": "NodePort"}}'
+minikube -n kafka-system service list
 ```

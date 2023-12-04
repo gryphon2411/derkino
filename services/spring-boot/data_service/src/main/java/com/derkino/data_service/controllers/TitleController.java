@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,13 +22,19 @@ import java.util.List;
 @RestController
 public class TitleController {
     @Autowired
-    MongoTemplate template;
+    MongoTemplate mongoTemplate;
     @Autowired
     TitleRepository repository;
+    @Autowired
+    KafkaTemplate<String, String> kafkaTemplate;
     @GetMapping("/titles/{id}")
     public Title getTitle(@PathVariable String id) {
-            return repository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Title title = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        sendToKafka(title);
+
+        return title;
     }
     @GetMapping("/titles")
     public Page<Title> getTitles(Pageable pageable,
@@ -45,7 +52,17 @@ public class TitleController {
     private PageImpl<Title> getTitlesPage(Query query, Pageable pageable) {
         query.with(pageable);
 
-        return new PageImpl<>(template.find(query, Title.class), pageable, template.count(query, Title.class));
+        List<Title> content = mongoTemplate.find(query, Title.class);
+
+        for (Title title : content) {
+            sendToKafka(title);
+        }
+
+        return new PageImpl<>(content, pageable, mongoTemplate.count(query, Title.class));
+    }
+
+    private void sendToKafka(Title title) {
+        kafkaTemplate.send("movie-searches", title.getPrimaryTitle());
     }
 
     private static void addQueryCriteria(Query query, String titleType, String primaryTitle,
