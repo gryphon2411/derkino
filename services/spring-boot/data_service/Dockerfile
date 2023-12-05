@@ -1,20 +1,32 @@
-# Start with a base image containing Java runtime
-FROM openjdk:17-jdk-alpine
+# Use the official Gradle image from the openjdk Docker Hub page
+FROM gradle:7.4-jdk17 as builder
 
 # Add Maintainer Info
 LABEL maintainer="eido.askayo@gmail.com"
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
-
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# The application's jar file
-ARG JAR_FILE=build/libs/*.jar
+# Set the working directory
+WORKDIR /home/gradle/project
 
-# Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
+# Copy the Gradle configuration files into the Docker image
+COPY build.gradle settings.gradle ./
 
-# Run the jar file
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+# Copy the source code into the Docker image
+COPY src ./src
+
+# Build the project inside the Docker container
+RUN gradle build --no-daemon
+
+# Use OpenJDK 17 for the runtime stage
+FROM openjdk:17-jdk-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the jar file from the builder stage into this new stage
+COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
+
+# Set the startup command to execute the jar
+CMD ["java", "-jar", "/app/app.jar"]
