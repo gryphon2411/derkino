@@ -34,7 +34,7 @@ spec:
           containerPort: 8080
         env:
         - name: KAFKA_HOSTS
-          value: kafka.kafka-system.svc.cluster.local
+          value: kafka-controller-0.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka-system.svc.cluster.local:9092
         - name: KAFKA_PASSWORD
           value: "Y1WjdekftZ"
         - name: KAFKA_USERNAME
