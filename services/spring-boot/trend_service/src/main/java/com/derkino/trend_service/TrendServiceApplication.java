@@ -37,13 +37,13 @@ public class TrendServiceApplication {
 				.toStream()
 				.foreach((key, value) -> mongoTemplate.save(new Trend("title", key.key(), value), "trends"));
 
-		// Write the trending genres by a window duration of 60 minutes to MongoDB
-		stream.flatMapValues(value -> value.genres)
-				.groupBy((key, value) -> value)
-				.windowedBy(TimeWindows.of(Duration.ofMinutes(60)))
-				.count()
-				.toStream()
-				.foreach((key, value) -> mongoTemplate.save(new Trend("genre", key.key(), value), "trends"));
+//		// Write the trending genres by a window duration of 60 minutes to MongoDB
+//		stream.flatMapValues(value -> value.genres)
+//				.groupBy((key, value) -> value, Grouped.with(Serdes.String(), Serdes.String()))
+//				.windowedBy(TimeWindows.of(Duration.ofMinutes(60)))
+//				.count()
+//				.toStream()
+//				.foreach((key, value) -> mongoTemplate.save(new Trend("genre", key.key(), value), "trends"));
 
 		return stream;
 	}
