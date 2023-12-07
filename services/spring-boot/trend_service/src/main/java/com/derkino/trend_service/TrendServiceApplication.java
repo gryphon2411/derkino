@@ -7,6 +7,7 @@ import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,13 @@ public class TrendServiceApplication {
 	private static final Logger logger = LoggerFactory.getLogger(TrendServiceApplication.class);
 
 	@Bean
-	public KStream<String, Title> kStream(StreamsBuilder streamsBuilder) {
-		KStream<String, Title> stream = streamsBuilder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
+	public KStream<String, Title> kStream(StreamsBuilder builder) {
+		KStream<String, Title> stream = builder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
 
 		// Group by title and window for 3 minutes
-		stream.map((key, value) -> new KeyValue<>(value.primaryTitle, value))
-				.groupByKey()
+		stream.groupByKey()
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(3)))
-				.count()
+				.count(Materialized.as("title-counts"))
 				.toStream()
 				.foreach((key, value) -> logger.info("Most consumed title in the last 3 minutes (key): " + key.key() + " with count (value): " + value));
 
@@ -45,7 +45,7 @@ public class TrendServiceApplication {
 		SpringApplication.run(TrendServiceApplication.class, args);
 	}
 
-
+}
 //	@Bean
 //	public KStream<String, Title> kStream(StreamsBuilder streamsBuilder) {
 //		KStream<String, Title> stream = streamsBuilder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
@@ -68,4 +68,4 @@ public class TrendServiceApplication {
 //
 //		return stream;
 //	}
-}
+//}
