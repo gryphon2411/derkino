@@ -22,6 +22,9 @@ RUN gradle build --no-daemon
 # Use OpenJDK 17 for the runtime stage
 FROM openjdk:17-jdk-alpine
 
+# Install necessary packages
+RUN apk --no-cache add libstdc++
+
 # Set the working directory
 WORKDIR /app
 
