@@ -33,7 +33,7 @@ public class TrendServiceApplication {
 		// Group by title and window for 3 minutes
 		stream.groupByKey()
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(3)))
-				.count(Materialized.as("title-counts"))
+				.count()
 				.toStream()
 				.foreach((key, value) -> logger.info("Most consumed title in the last 3 minutes (key): " + key.key() + " with count (value): " + value));
 
