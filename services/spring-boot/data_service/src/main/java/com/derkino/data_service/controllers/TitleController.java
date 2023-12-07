@@ -70,7 +70,7 @@ public class TitleController {
 
     private void sendToKafka(Title title) {
         try {
-            kafkaTemplate.send("title-searches", objectMapper.writeValueAsString(title));
+            kafkaTemplate.send("title-searches", title.id, objectMapper.writeValueAsString(title));
         } catch (JsonProcessingException exception) {
             logger.error("Couldn't send title (id: {}) to 'title-searches' topic", title.id, exception);
         }
