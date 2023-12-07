@@ -25,10 +25,21 @@ import java.time.Duration;
 public class TrendServiceApplication {
 	private static final Logger logger = LoggerFactory.getLogger(TrendServiceApplication.class);
 
+	@Autowired
+	private MongoTemplate mongoTemplate;
+
 	@Bean
-	public KStream<String, Title> kStreamJson(StreamsBuilder streamsBuilder) {
+	public KStream<String, Title> kStream(StreamsBuilder streamsBuilder) {
 		KStream<String, Title> stream = streamsBuilder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
-		stream.foreach((key, value) -> logger.info("Consumed message: " + value));
+
+		// Write the trending titles by a window duration of 60 minutes to MongoDB
+		stream.map((key, value) -> new KeyValue<>(value.id, value))
+				.groupByKey()
+				.windowedBy(TimeWindows.of(Duration.ofMinutes(3)))
+				.count()
+				.toStream()
+				.foreach((key, value) -> mongoTemplate.save(new Trend("title", key.key(), value), "trends"));
+
 		return stream;
 	}
 
@@ -36,8 +47,6 @@ public class TrendServiceApplication {
 		SpringApplication.run(TrendServiceApplication.class, args);
 	}
 
-	// 	@Autowired
-//	private MongoTemplate mongoTemplate;
 
 //	@Bean
 //	public KStream<String, Title> kStream(StreamsBuilder streamsBuilder) {
