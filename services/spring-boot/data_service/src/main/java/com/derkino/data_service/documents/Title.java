@@ -21,7 +21,5 @@ public class Title {
     public int runtimeMinutes;
     public List<String> genres;
 
-    public String getPrimaryTitle() {
-        return primaryTitle;
-    }
+    public Title() { }
 }

@@ -2,6 +2,10 @@ package com.derkino.data_service.controllers;
 
 import com.derkino.data_service.documents.Title;
 import com.derkino.data_service.repositories.TitleRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,12 +25,15 @@ import java.util.List;
 
 @RestController
 public class TitleController {
+    private static final Logger logger = LoggerFactory.getLogger(TitleController.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     MongoTemplate mongoTemplate;
     @Autowired
     TitleRepository repository;
     @Autowired
     KafkaTemplate<String, String> kafkaTemplate;
+
     @GetMapping("/titles/{id}")
     public Title getTitle(@PathVariable String id) {
         Title title = repository.findById(id)
@@ -62,7 +69,11 @@ public class TitleController {
     }
 
     private void sendToKafka(Title title) {
-        kafkaTemplate.send("movie-searches", title.getPrimaryTitle());
+        try {
+            kafkaTemplate.send("title-searches", objectMapper.writeValueAsString(title));
+        } catch (JsonProcessingException exception) {
+            logger.error("Couldn't send title (id: {}) to 'title-searches' topic", title.id, exception);
+        }
     }
 
     private static void addQueryCriteria(Query query, String titleType, String primaryTitle,
