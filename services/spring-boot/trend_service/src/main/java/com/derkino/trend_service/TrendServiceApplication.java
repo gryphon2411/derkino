@@ -35,7 +35,13 @@ public class TrendServiceApplication {
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(3)))
 				.count()
 				.toStream()
-				.foreach((key, value) -> logger.info("Most consumed title in the last 3 minutes (key): " + key.key() + " with count (value): " + value));
+				.foreach((key, value) -> logger.info(
+						"\n\nkey: " + key +
+						"\nkey.key(): " + key.key() +
+						"\nkey.window(): " + key.window() +
+						"\nkey.window().startTime(): " + key.window().startTime() +
+						"\nkey.window().endTime(): " + key.window().endTime() +
+						"\nvalue (count): " + value));
 
 		return stream;
 	}
