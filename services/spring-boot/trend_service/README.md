@@ -22,3 +22,5 @@ https://start.spring.io/
     - Spring for Apache Kafka Streams
     - Spring Data MongoDB
     - Spring Data Redis (Access+Driver) NoSQL
+    - Spring Web
+    - Spring Rest Docs
