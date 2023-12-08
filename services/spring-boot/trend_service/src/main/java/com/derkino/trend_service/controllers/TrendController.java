@@ -29,7 +29,7 @@ public class TrendController {
     public Map<String, Long> getTrends() {
         Map<String, Long> trends = new HashMap<>();
         StoreQueryParameters<ReadOnlyWindowStore<String, Long>> parameters = StoreQueryParameters.fromNameAndType(
-                "kafka-streams-state-store",QueryableStoreTypes.windowStore()
+                "title-counts",QueryableStoreTypes.windowStore()
         );
 
         ReadOnlyWindowStore<String, Long> windowStore = bean.getKafkaStreams().store(parameters);
