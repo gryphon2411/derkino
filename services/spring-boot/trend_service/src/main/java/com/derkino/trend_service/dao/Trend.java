@@ -1,0 +1,16 @@
+package com.derkino.trend_service.dao;
+
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.Windowed;
+
+public class Trend {
+    public Long count;
+    public String startTime;
+    public String endTine;
+
+    public Trend(KeyValue<Windowed<String>, Long> record) {
+        this.count = record.value;
+        this.startTime = record.key.window().startTime().toString();
+        this.endTine = record.key.window().endTime().toString();
+    }
+}

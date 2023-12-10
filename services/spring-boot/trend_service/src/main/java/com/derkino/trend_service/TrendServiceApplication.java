@@ -2,9 +2,7 @@ package com.derkino.trend_service;
 
 import com.derkino.trend_service.common.Utils;
 import com.derkino.trend_service.documents.Title;
-import com.derkino.trend_service.documents.Trend;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
@@ -12,11 +10,9 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
@@ -32,18 +28,27 @@ public class TrendServiceApplication {
 		KStream<String, Title> stream = builder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
 
 		long minutes = Long.parseLong(Utils.MIN_WINDOW_TIME_MINUTES);
+
 		// Group by title and window for 3 minutes
 		stream.groupByKey()
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
 				.count(Materialized.as("title-counts"))
+				.toStream();
+
+		// Group by genre and window for 3 minutes
+		stream.flatMapValues(value -> value.genres)
+				.groupByKey()
+				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
+				.count(Materialized.as("genre-counts"))
 				.toStream()
 				.foreach((key, value) -> logger.info(
-						"\n\nkey: " + key +
-						"\nkey.key(): " + key.key() +
-						"\nkey.window(): " + key.window() +
-						"\nkey.window().startTime(): " + key.window().startTime() +
-						"\nkey.window().endTime(): " + key.window().endTime() +
-						"\nvalue (count): " + value));
+					"\n\n kStream" +
+							"\nkey: " + key +
+							"\nkey.key(): " + key.key() +
+							"\nkey.window(): " + key.window() +
+							"\nkey.window().startTime(): " + key.window().startTime() +
+							"\nkey.window().endTime(): " + key.window().endTime() +
+							"\nvalue (count): " + value));
 
 		return stream;
 	}

@@ -1,7 +1,7 @@
 package com.derkino.trend_service.controllers;
 
-import com.derkino.trend_service.TrendServiceApplication;
 import com.derkino.trend_service.common.Utils;
+import com.derkino.trend_service.dao.Trend;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -22,14 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class TrendController {
-    private static final Logger logger = LoggerFactory.getLogger(TrendServiceApplication.class);
+public class TitleTrendController {
+    private static final Logger logger = LoggerFactory.getLogger(TitleTrendController.class);
     @Autowired
     StreamsBuilderFactoryBean bean;
 
-    @GetMapping("/trends")
-    public Map<String, Long> getTrends(@RequestParam(value = "minutes", defaultValue = Utils.MIN_WINDOW_TIME_MINUTES) long minutes) {
-        Map<String, Long> trends = new HashMap<>();
+    @GetMapping("/trends/titles")
+    public Map<String, Trend> getTitleTrends(@RequestParam(value = "minutes", defaultValue = Utils.MIN_WINDOW_TIME_MINUTES) long minutes) {
         StoreQueryParameters<ReadOnlyWindowStore<String, Long>> parameters = StoreQueryParameters.fromNameAndType(
                 "title-counts",QueryableStoreTypes.windowStore()
         );
@@ -39,17 +38,11 @@ public class TrendController {
         Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
         Instant timeFrom = currentTime.minus(Duration.ofMinutes(minutes));
 
+        Map<String, Trend> trends = new HashMap<>();
         KeyValueIterator<Windowed<String>, Long> iterator = windowStore.fetchAll(timeFrom, currentTime);
         while (iterator.hasNext()) {
-            KeyValue<Windowed<String>, Long> next = iterator.next();
-            trends.put(next.key.toString(), next.value);
-            logger.info(
-                    "\n\n next: " + next +
-                            "\n next.key: " + next.key +
-                            "\n next.key.key(): " + next.key.key() +
-                            "\n next.key.window(): " + next.key.window() +
-                            "\n next.value: " + next.value
-            );
+            KeyValue<Windowed<String>, Long> record = iterator.next();
+            trends.put(record.key.key(), new Trend(record));
         }
 
         return trends;
