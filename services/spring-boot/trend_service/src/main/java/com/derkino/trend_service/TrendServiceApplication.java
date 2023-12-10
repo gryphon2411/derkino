@@ -1,5 +1,6 @@
 package com.derkino.trend_service;
 
+import com.derkino.trend_service.common.Utils;
 import com.derkino.trend_service.documents.Title;
 import com.derkino.trend_service.documents.Trend;
 import org.apache.kafka.common.serialization.Serdes;
@@ -30,9 +31,10 @@ public class TrendServiceApplication {
 	public KStream<String, Title> kStream(StreamsBuilder builder) {
 		KStream<String, Title> stream = builder.stream("title-searches", Consumed.with(Serdes.String(), new JsonSerde<>(Title.class)));
 
+		long minutes = Long.parseLong(Utils.MIN_WINDOW_TIME_MINUTES);
 		// Group by title and window for 3 minutes
 		stream.groupByKey()
-				.windowedBy(TimeWindows.of(Duration.ofMinutes(3)))
+				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
 				.count(Materialized.as("title-counts"))
 				.toStream()
 				.foreach((key, value) -> logger.info(

@@ -1,6 +1,7 @@
 package com.derkino.trend_service.controllers;
 
 import com.derkino.trend_service.TrendServiceApplication;
+import com.derkino.trend_service.common.Utils;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
@@ -26,7 +28,7 @@ public class TrendController {
     StreamsBuilderFactoryBean bean;
 
     @GetMapping("/trends")
-    public Map<String, Long> getTrends() {
+    public Map<String, Long> getTrends(@RequestParam(value = "minutes", defaultValue = Utils.MIN_WINDOW_TIME_MINUTES) long minutes) {
         Map<String, Long> trends = new HashMap<>();
         StoreQueryParameters<ReadOnlyWindowStore<String, Long>> parameters = StoreQueryParameters.fromNameAndType(
                 "title-counts",QueryableStoreTypes.windowStore()
@@ -34,15 +36,20 @@ public class TrendController {
 
         ReadOnlyWindowStore<String, Long> windowStore = bean.getKafkaStreams().store(parameters);
 
-        // Get the window end timestamp
-        Instant timeTo = Instant.ofEpochMilli(System.currentTimeMillis()); // current time
-        Instant timeFrom = timeTo.minus(Duration.ofMinutes(3)); // beginning of window
+        Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
+        Instant timeFrom = currentTime.minus(Duration.ofMinutes(minutes));
 
-        // Query the window store for the latest counts
-        KeyValueIterator<Windowed<String>, Long> iterator = windowStore.fetchAll(timeFrom, timeTo);
+        KeyValueIterator<Windowed<String>, Long> iterator = windowStore.fetchAll(timeFrom, currentTime);
         while (iterator.hasNext()) {
             KeyValue<Windowed<String>, Long> next = iterator.next();
             trends.put(next.key.toString(), next.value);
+            logger.info(
+                    "\n\n next: " + next +
+                            "\n next.key: " + next.key +
+                            "\n next.key.key(): " + next.key.key() +
+                            "\n next.key.window(): " + next.key.window() +
+                            "\n next.value: " + next.value
+            );
         }
 
         return trends;
