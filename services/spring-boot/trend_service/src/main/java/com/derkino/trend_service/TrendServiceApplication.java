@@ -37,8 +37,7 @@ public class TrendServiceApplication {
 
 		// Group by genre and window for 3 minutes
 		stream.flatMapValues(value -> value.genres)
-				.selectKey((key, value) -> value)
-				.groupByKey()
+				.groupBy((key, value) -> value)
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
 				.count(Materialized.as("genre-counts"))
 				.toStream()
