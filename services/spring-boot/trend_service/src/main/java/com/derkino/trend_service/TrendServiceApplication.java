@@ -4,6 +4,7 @@ import com.derkino.trend_service.common.Utils;
 import com.derkino.trend_service.documents.Title;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -37,7 +38,7 @@ public class TrendServiceApplication {
 
 		// Group by genre and window for 3 minutes
 		stream.flatMapValues(value -> value.genres)
-				.groupBy((key, value) -> value)
+				.groupBy((key, value) -> value, Grouped.with(Serdes.String(), Serdes.String()))
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
 				.count(Materialized.as("genre-counts"))
 				.toStream()
