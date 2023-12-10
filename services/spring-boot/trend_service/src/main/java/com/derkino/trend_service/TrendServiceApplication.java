@@ -41,15 +41,7 @@ public class TrendServiceApplication {
 				.groupBy((key, value) -> value, Grouped.with(Serdes.String(), Serdes.String()))
 				.windowedBy(TimeWindows.of(Duration.ofMinutes(minutes)))
 				.count(Materialized.as("genre-counts"))
-				.toStream()
-				.foreach((key, value) -> logger.info(
-					"\n\n kStream" +
-							"\nkey: " + key +
-							"\nkey.key(): " + key.key() +
-							"\nkey.window(): " + key.window() +
-							"\nkey.window().startTime(): " + key.window().startTime() +
-							"\nkey.window().endTime(): " + key.window().endTime() +
-							"\nvalue (count): " + value));
+				.toStream();
 
 		return stream;
 	}

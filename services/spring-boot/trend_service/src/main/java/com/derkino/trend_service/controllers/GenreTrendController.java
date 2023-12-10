@@ -43,14 +43,6 @@ public class GenreTrendController {
         while (iterator.hasNext()) {
             KeyValue<Windowed<String>, Long> next = iterator.next();
             trends.put(next.key.key(), next.value);
-            logger.info(
-                    "\n\n getGenreTrends" +
-                            "\n next: " + next +
-                            "\n next.key: " + next.key +
-                            "\n next.key.key(): " + next.key.key() +
-                            "\n next.key.window(): " + next.key.window() +
-                            "\n next.value: " + next.value
-            );
         }
 
         return trends;
