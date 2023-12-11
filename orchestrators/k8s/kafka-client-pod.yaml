@@ -10,8 +10,9 @@
 #         kafka-console-consumer.sh \
 #             --consumer.config /tmp/client.properties \
 #             --bootstrap-server kafka.kafka-system.svc.cluster.local:9092 \
-#             --topic test \
-#             --from-beginning
+#             --from-beginning \
+#             --property print.key=true \
+#             --topic test
 apiVersion: v1
 kind: ConfigMap
 metadata:
