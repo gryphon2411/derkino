@@ -11,13 +11,12 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 export default function TitlesPage() {
   const dispatch = useDispatch();
-  const { titles, isLoading, isError, setPage, setSize, size, page } = useTitles();
+  const { titles, isLoading, isError } = useTitles();
 
   React.useEffect(() => {
     if (titles) {
@@ -67,14 +66,6 @@ export default function TitlesPage() {
               ))}
             </TableBody>
           </Table>
-          <TablePagination
-            component="div"
-            count={-1}
-            rowsPerPage={size}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => setSize(parseInt(event.target.value, 10))}
-          />
         </TableContainer>
       </Box>
     </Container>
