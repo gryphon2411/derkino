@@ -1,8 +1,6 @@
 'use client'
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,12 +9,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 
 export default function TitlesPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState({ content: [], totalElements: 0 });
+  const [data, setData] = useState({ content: [] });
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -40,8 +37,8 @@ export default function TitlesPage() {
         <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
-              <TableCell>Year</TableCell>
-              <TableCell>Runtime (min)</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Start Year</TableCell>
               <TableCell>Genres</TableCell>
             </TableRow>
           </TableHead>
