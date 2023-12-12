@@ -1,6 +1,8 @@
 'use client'
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTitles, setPage, setRowsPerPage } from './slice';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,24 +13,31 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 export default function TitlesPage() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [data, setData] = useState({ content: [] });
+  const dispatch = useDispatch();
+  const titles = useSelector((state) => state.titles.content);
+  const titlesStatus = useSelector((state) => state.titles.status);
+  const titlesError = useSelector((state) => state.titles.error);
+  const page = useSelector((state) => state.titles.page);
+  const rowsPerPage = useSelector((state) => state.titles.rowsPerPage);
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    dispatch(setPage(newPage));
+    dispatch(fetchTitles({ page: newPage, rowsPerPage }));
   };
-
+  
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    const newPage = 0;
+    dispatch(setRowsPerPage(newRowsPerPage));
+    dispatch(setPage(newPage));
+    dispatch(fetchTitles({ page: newPage, rowsPerPage: newRowsPerPage }));
   };
 
   useEffect(() => {
-    fetch(`http://192.168.49.2:32062/api/v1/titles?page=${page}&size=${rowsPerPage}`)
-      .then(response => response.json())
-      .then(data => setData(data));
-  }, [page, rowsPerPage]);
+    if (titlesStatus === 'idle') {
+      dispatch(fetchTitles({ page, rowsPerPage }));
+    }
+  }, [dispatch, page, rowsPerPage, titlesStatus]);  
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -43,7 +52,7 @@ export default function TitlesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.content.map((row) => (
+            {titles.map((row) => (
               <TableRow key={row.id}>
                 <TableCell component="th" scope="row">{row.primaryTitle}</TableCell>
                 <TableCell>{row.titleType}</TableCell>
