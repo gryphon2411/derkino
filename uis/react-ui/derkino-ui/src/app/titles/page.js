@@ -1,6 +1,8 @@
 'use client'
 import * as React from 'react';
-import { useTitles } from './hooks';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTitles, setPage, setRowsPerPage } from './slice';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,21 +13,31 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 export default function TitlesPage() {
-  const {
-    titles,
-    titlesStatus,
-    titlesError,
-    page,
-    rowsPerPage,
-    handleChangePage,
-    handleChangeRowsPerPage,
-  } = useTitles();
+  const dispatch = useDispatch();
+  const titles = useSelector((state) => state.titles.content);
+  const titlesStatus = useSelector((state) => state.titles.status);
+  const titlesError = useSelector((state) => state.titles.error);
+  const page = useSelector((state) => state.titles.page);
+  const rowsPerPage = useSelector((state) => state.titles.rowsPerPage);
 
-  if (titlesStatus === 'loading') {
-    return <div>Loading...</div>;
-  } else if (titlesStatus === 'failed') {
-    return <div>Error: {titlesError}</div>;
-  }
+  const handleChangePage = (event, newPage) => {
+    dispatch(setPage(newPage));
+    dispatch(fetchTitles({ page: newPage, rowsPerPage }));
+  };
+  
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    const newPage = 0;
+    dispatch(setRowsPerPage(newRowsPerPage));
+    dispatch(setPage(newPage));
+    dispatch(fetchTitles({ page: newPage, rowsPerPage: newRowsPerPage }));
+  };
+
+  useEffect(() => {
+    if (titlesStatus === 'idle') {
+      dispatch(fetchTitles({ page, rowsPerPage }));
+    }
+  }, [dispatch, page, rowsPerPage, titlesStatus]);  
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
