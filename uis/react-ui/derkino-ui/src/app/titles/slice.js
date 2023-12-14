@@ -25,6 +25,7 @@ const titlesSlice = createSlice({
     content: [],
     page: 0,
     rowsPerPage: 10,
+    view: 'table'
   },
   reducers: {
     setPage: (state, action) => {
@@ -35,6 +36,16 @@ const titlesSlice = createSlice({
       state.page = 0;
       state.rowsPerPage = action.payload;
     },
+    setView: (state, action) => {
+      state.content = [];
+      state.page = 0;
+      if (action.payload === 'table') {
+        state.rowsPerPage = 10;
+      } else if (action.payload == 'grid') {
+        state.rowsPerPage = 50;
+      }
+      state.view = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -61,6 +72,6 @@ const titlesSlice = createSlice({
   },
 });
 
-export const { setPage, setRowsPerPage } = titlesSlice.actions;
+export const { setPage, setRowsPerPage, setView } = titlesSlice.actions;
 
 export default titlesSlice.reducer;
