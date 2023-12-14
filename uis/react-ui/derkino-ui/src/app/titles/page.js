@@ -22,22 +22,20 @@ export default function TitlesPage() {
 
   const handleChangePage = (event, newPage) => {
     dispatch(setPage(newPage));
-    dispatch(fetchTitles({ page: newPage, rowsPerPage }));
+    dispatch(fetchTitles());
   };
   
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
-    const newPage = 0;
     dispatch(setRowsPerPage(newRowsPerPage));
-    dispatch(setPage(newPage));
-    dispatch(fetchTitles({ page: newPage, rowsPerPage: newRowsPerPage }));
+    dispatch(fetchTitles());
   };
 
   useEffect(() => {
     if (titlesStatus === 'idle') {
-      dispatch(fetchTitles({ page, rowsPerPage }));
+      dispatch(fetchTitles());
     }
-  }, [dispatch, page, rowsPerPage, titlesStatus]);  
+  }, [dispatch, titlesStatus]);  
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
