@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Grid, CircularProgress } from '@mui/material';
+import { Grid, CircularProgress, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import { fetchTitles, setPage } from '@/app/titles/slice';
 
 
@@ -36,10 +37,15 @@ export default function TitlesGrid() {
       <Grid container spacing={3}>
         {titles.map((title, index) => (
           <Grid item key={title.id} xs={12} sm={6} md={4} lg={4}>
-            <div>{title.primaryTitle}</div>
-            <div>{title.titleType}</div>
-            <div>{title.startYear}</div>
-            <div>{title.genres.join(', ')}</div>
+            <Card>
+              <CardMedia component={() => <LocalMoviesIcon sx={{ fontSize: 50 }} />} />
+              <CardContent>
+                <Typography variant="h5">{title.primaryTitle}</Typography>
+                <Typography variant="subtitle1" color="text.secondary">{title.titleType}</Typography>
+                <Typography variant="body2">{title.startYear}</Typography>
+                <Typography variant="body2">{title.genres.join(', ')}</Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
       </Grid>
