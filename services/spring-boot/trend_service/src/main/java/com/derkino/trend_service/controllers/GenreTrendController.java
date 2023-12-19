@@ -1,6 +1,7 @@
 package com.derkino.trend_service.controllers;
 
 import com.derkino.trend_service.common.Utils;
+import com.derkino.trend_service.dao.Trend;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StoreQueryParameters;
 import org.apache.kafka.streams.kstream.Windowed;
@@ -28,7 +29,7 @@ public class GenreTrendController {
     StreamsBuilderFactoryBean bean;
 
     @GetMapping("/trends/genres")
-    public Map<String, Long> getGenreTrends(@RequestParam(value = "minutes", defaultValue = Utils.MIN_WINDOW_TIME_MINUTES) long minutes) {
+    public Map<String, Trend> getGenreTrends(@RequestParam(value = "minutes", defaultValue = Utils.MIN_WINDOW_TIME_MINUTES) long minutes) {
         StoreQueryParameters<ReadOnlyWindowStore<String, Long>> parameters = StoreQueryParameters.fromNameAndType(
                 "genre-counts",QueryableStoreTypes.windowStore()
         );
@@ -38,11 +39,11 @@ public class GenreTrendController {
         Instant currentTime = Instant.ofEpochMilli(System.currentTimeMillis());
         Instant timeFrom = currentTime.minus(Duration.ofMinutes(minutes));
 
-        Map<String, Long> trends = new HashMap<>();
+        Map<String, Trend> trends = new HashMap<>();
         KeyValueIterator<Windowed<String>, Long> iterator = windowStore.fetchAll(timeFrom, currentTime);
         while (iterator.hasNext()) {
-            KeyValue<Windowed<String>, Long> next = iterator.next();
-            trends.put(next.key.key(), next.value);
+            KeyValue<Windowed<String>, Long> record = iterator.next();
+            trends.put(record.key.key(), new Trend(record));
         }
 
         return trends;
