@@ -1,18 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { setError } from '@/app/slice';
 
 export const fetchTitles = createAsyncThunk(
   'titles/fetchTitles',
-  async (_, { getState, requestId }) => {
+  async (_, { getState, requestId, dispatch }) => {
     const { currentRequestId, page, rowsPerPage } = getState().titles;
     
+    // Prevents duplicated fetches due to fast consecutive calls
     if (requestId !== currentRequestId) {
-      // Prevents duplicated fetches due to fast consecutive calls
       return;
     }
 
-    const response = await fetch(`http://192.168.49.2:32062/api/v1/titles?page=${page}&size=${rowsPerPage}`);
-    const data = await response.json();
-    return data;
+    try {
+      const response = await fetch(`http://192.168.49.2:32062/api/v1/titles?page=${page}&size=${rowsPerPage}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    } catch (error) {
+      dispatch(setError(error.message));
+
+      throw error;
+    }
   }
 );
 

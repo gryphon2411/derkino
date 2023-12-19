@@ -1,17 +1,8 @@
 import * as React from 'react';
 import { StoreProvider } from '@/store/provider';
 import Link from 'next/link';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import { AppBar, Toolbar, Typography, Drawer, Divider, List, ListItem, ListItemButton,
+ListItemIcon, ListItemText } from '@mui/material';
 import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import HomeIcon from '@mui/icons-material/Home';
@@ -21,6 +12,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SupportIcon from '@mui/icons-material/Support';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
+import MainFragment from '@/components/MainFragment';
 
 export const metadata = {
   title: 'Next.js App Router + Material UI v5',
@@ -98,18 +90,7 @@ export default function RootLayout({ children }) {
                 ))}
               </List>
             </Drawer>
-            <Box
-              component="main"
-              sx={{
-                flexGrow: 1,
-                bgcolor: 'background.default',
-                ml: `${DRAWER_WIDTH}px`,
-                mt: ['48px', '56px', '64px'],
-                p: 3,
-              }}
-            >
-              {children}
-            </Box>
+            <MainFragment marginLeft={DRAWER_WIDTH}>{children}</MainFragment>
           </ThemeRegistry>
         </StoreProvider>
       </body>
