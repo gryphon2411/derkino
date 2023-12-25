@@ -21,8 +21,16 @@ echo "default"
 kubectl -n redis-stack-system get secret redis-stack-default-user-pass -o jsonpath='{.data.password}' | base64 --decode
 minikube -n redis-stack-system service list
 
-helm -n kafka-system install kafka orchestrators/k8s/charts/kafka --create-namespace
-helm -n kafka-system list
-kubectl -n kafka-system patch service kafka -p '{"spec": {"type": "NodePort"}}'
-minikube -n kafka-system service list
+# https://artifacthub.io/packages/helm/bitnami/kafka
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm -n kafka-system install kafka bitnami/kafka --version 26.6.2 -f orchestrators/k8s/charts/kafka/values.yaml --create-namespace
+
+kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
+```
+
+### Helm Cheatsheet 
+
+```bash
+helm list -A
 ```
