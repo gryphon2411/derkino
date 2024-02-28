@@ -1,6 +1,5 @@
-package com.derkino.data_service.repositories;
+package com.derkino.data_service.titles;
 
-import com.derkino.data_service.documents.Title;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

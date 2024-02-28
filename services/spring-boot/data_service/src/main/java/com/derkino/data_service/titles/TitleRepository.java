@@ -1,6 +1,5 @@
-package com.derkino.data_service.repositories;
+package com.derkino.data_service.titles;
 
-import com.derkino.data_service.documents.Title;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TitleRepository extends MongoRepository<Title, String>, CustomTitleRepository { }

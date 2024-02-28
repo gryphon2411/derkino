@@ -1,7 +1,5 @@
-package com.derkino.data_service.controllers;
+package com.derkino.data_service.titles;
 
-import com.derkino.data_service.documents.Title;
-import com.derkino.data_service.services.TitleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

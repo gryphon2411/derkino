@@ -1,4 +1,4 @@
-package com.derkino.data_service.documents;
+package com.derkino.data_service.titles;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

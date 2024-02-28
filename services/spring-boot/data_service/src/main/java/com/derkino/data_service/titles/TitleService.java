@@ -1,7 +1,5 @@
-package com.derkino.data_service.services;
+package com.derkino.data_service.titles;
 
-import com.derkino.data_service.documents.Title;
-import com.derkino.data_service.repositories.TitleRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
