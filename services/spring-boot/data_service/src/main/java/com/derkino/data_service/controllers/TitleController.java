@@ -15,19 +15,19 @@ import java.util.List;
 @RestController
 public class TitleController {
     @Autowired
-    TitleService titleService;
+    TitleService service;
 
     @GetMapping("/titles/{id}")
     public Title getTitle(@PathVariable String id) {
-        return titleService.getTitle(id);
+        return service.getTitle(id);
     }
 
     @GetMapping("/titles")
     public Page<Title> getTitles(Pageable pageable,
-                                 @RequestParam(required = false) String titleType,
-                                 @RequestParam(required = false) String primaryTitle,
-                                 @RequestParam(required = false) Boolean isAdult,
-                                 @RequestParam(required = false) List<String> genres) {
-        return titleService.getTitles(pageable, titleType, primaryTitle, isAdult, genres);
+                                     @RequestParam(required = false) String titleType,
+                                     @RequestParam(required = false) String primaryTitle,
+                                     @RequestParam(required = false) Boolean isAdult,
+                                     @RequestParam(required = false) List<String> genres) {
+        return service.getTitles(pageable, titleType, primaryTitle, isAdult, genres);
     }
 }
