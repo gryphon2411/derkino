@@ -23,11 +23,11 @@ public class TitleController {
     }
 
     @GetMapping("/titles")
-    public Page<Title> getTitles(Pageable pageable,
+    public Page<Title> getTitlesPage(Pageable pageable,
                                      @RequestParam(required = false) String titleType,
                                      @RequestParam(required = false) String primaryTitle,
                                      @RequestParam(required = false) Boolean isAdult,
                                      @RequestParam(required = false) List<String> genres) {
-        return service.getTitles(pageable, titleType, primaryTitle, isAdult, genres);
+        return service.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres);
     }
 }
