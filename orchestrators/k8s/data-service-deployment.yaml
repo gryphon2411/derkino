@@ -40,14 +40,14 @@ spec:
         - name: KAFKA_USERNAME
           value: root
         - name: MONGO_DATABASE
-          value: "derkino"
+          value: derkino
         - name: MONGO_HOST_ADDRESS
-          value: "192.168.49.2"
+          value: mongodb.mongodb-system
         - name: MONGO_HOST_PORT
-          value: "31413"
+          value: "27017"
         - name: MONGO_PASSWORD
-          value: "X6d9r2SgJ8xQgpGL"
+          value: X6d9r2SgJ8xQgpGL
         - name: MONGO_USERNAME
-          value: "root"
+          value: root
         - name: SERVICE_HOST_PREFIX
-          value: "/api/v1"
+          value: /api/v1
