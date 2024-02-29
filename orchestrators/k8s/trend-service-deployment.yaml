@@ -36,9 +36,9 @@ spec:
         - name: KAFKA_HOSTS
           value: kafka-controller-0.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka-system.svc.cluster.local:9092
         - name: KAFKA_PASSWORD
-          value: "qvVi7WmvO8"
+          value: w43Pw4Q9cb
         - name: KAFKA_USERNAME
-          value: "user1"
+          value: root
         - name: MONGO_DATABASE
           value: "derkino"
         - name: MONGO_HOST_ADDRESS

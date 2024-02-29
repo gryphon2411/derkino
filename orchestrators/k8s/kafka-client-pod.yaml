@@ -25,7 +25,7 @@ data:
     value.serializer=org.apache.kafka.common.serialization.StringSerializer
     security.protocol=SASL_PLAINTEXT
     sasl.mechanism=SCRAM-SHA-256
-    sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="user1" password="Y1WjdekftZ";
+    sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="root" password="w43Pw4Q9cb";
 ---
 apiVersion: v1
 kind: Pod

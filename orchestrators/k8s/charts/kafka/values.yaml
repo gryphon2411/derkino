@@ -4,3 +4,8 @@ service:
 metrics:
   kafka:
     enabled: true
+
+sasl:
+  client:
+    users: ["root"]
+    passwords: ["w43Pw4Q9cb"]
