@@ -27,6 +27,29 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 helm -n kafka-system install kafka bitnami/kafka --version 26.6.2 -f orchestrators/k8s/charts/kafka/values.yaml --create-namespace
 
 kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
+
+kubectl apply -f orchestrators/k8s/data-service-deployment.yaml
+# Perform at least 1 search so all Kafka input topics will be created
+kubectl apply -f orchestrators/k8s/trend-service-deployment.yaml
+
+# https://artifacthub.io/packages/helm/prometheus-community/prometheus
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+helm -n prometheus-system install prometheus prometheus-community/prometheus --version 25.8.2 -f orchestrators/k8s/charts/prometheus/values.yaml --create-namespace
+# Expression (temporary view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
+
+# https://artifacthub.io/packages/helm/grafana/grafana?modal=install
+helm repo add grafana https://grafana.github.io/helm-charts
+
+helm -n grafana-system install grafana grafana/grafana --version 7.0.19 -f orchestrators/k8s/charts/grafana/values.yaml --create-namespace
+
+echo "admin"
+kubectl -n grafana-system get secret grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+# Data sources:
+# - Type: Prometheus
+# - Name: prometheus-server
+# - Prometheus server URL: http://prometheus-server.prometheus-system
+# Query (permanent view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
 ```
 
 ### Helm Cheatsheet 
