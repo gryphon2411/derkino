@@ -6,7 +6,7 @@ v20.11.1
 
 npm init
 
-npm install express mongoose bcrypt jsonwebtoken morgan dotenv zxcvbn
+npm install express mongoose bcrypt jsonwebtoken morgan dotenv zxcvbn nodemailer speakeasy
 
 node index.js
 ```
