@@ -32,7 +32,7 @@ class GemmaGenerativeModel:
     def prompt_title_facts(self, title_name, title_year):
         input_ids = self.__get_model_input_ids(title_name, title_year)
 
-        logger.warning(f"Generating outputs...")
+        logger.warning(f"Generating '{self.MODEL_NAME}' outputs for title facts prompt...")
         outputs = self.model.generate(input_ids=input_ids.to(self.model.device), max_new_tokens=150)
 
         return self._get_model_response(outputs)
