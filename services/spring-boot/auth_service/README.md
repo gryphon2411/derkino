@@ -1,6 +1,7 @@
 # Spring Boot Auth Service
 
 ## References
+- https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/index.html#publish-authentication-manager-bean
 - https://spring.io/projects/spring-security
 - https://docs.spring.io/spring-security/reference/index.html
 - https://docs.spring.io/spring-security/reference/servlet/index.html
