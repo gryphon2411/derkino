@@ -1,5 +1,6 @@
 package com.derkino.auth_service.customuser;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
+    @Cacheable("users")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         CustomUser customUser = this.userRepository.findCustomUserByUsername(username);
         if (customUser == null) {

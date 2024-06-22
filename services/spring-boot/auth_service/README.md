@@ -8,6 +8,9 @@
 - https://github.com/spring-projects/spring-security-samples/tree/6.2.x/servlet/spring-boot/java
 - https://docs.spring.io/spring-data/mongodb/reference/
 - https://spring.io/guides/topicals/spring-security-architecture
+- https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/caching.html
+- https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html
+- https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html
 
 - https://spring.io/projects/spring-authorization-server
 
@@ -33,6 +36,8 @@ https://start.spring.io/
 - Dependencies:
   - Spring Web
   - Spring Data MongoDB
+  - Spring Cache Abstraction
+  - Spring Data Redis (Access+Driver)
   - Spring for RabbitMQ Messaging
   - Spring for Apache Kafka Streams
   - Spring Security

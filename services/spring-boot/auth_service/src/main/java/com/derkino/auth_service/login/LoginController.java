@@ -26,6 +26,8 @@ public class LoginController {
 
         CustomUser principal = (CustomUser) authenticationResponse.getPrincipal();
 
+        principal.password = null;
+
         return ResponseEntity.ok(principal);
     }
 
