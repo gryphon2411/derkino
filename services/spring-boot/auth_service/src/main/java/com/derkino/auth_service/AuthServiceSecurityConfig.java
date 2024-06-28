@@ -32,7 +32,11 @@ public class AuthServiceSecurityConfig {
                                 authorize
                                         .requestMatchers("/login").permitAll()
                                         .anyRequest().authenticated())
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults())
+                .exceptionHandling(
+                        (exceptionHandling) ->
+                                exceptionHandling
+                                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }
