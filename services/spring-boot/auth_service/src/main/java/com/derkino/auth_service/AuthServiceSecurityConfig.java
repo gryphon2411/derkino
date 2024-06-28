@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -32,11 +34,13 @@ public class AuthServiceSecurityConfig {
                                 authorize
                                         .requestMatchers("/login").permitAll()
                                         .anyRequest().authenticated())
-                .httpBasic(withDefaults())
-                .exceptionHandling(
-                        (exceptionHandling) ->
-                                exceptionHandling
-                                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+                .httpBasic(withDefaults());
+
+// Commented-out due to swallowing 401 status code for /login endpoint
+//                .exceptionHandling(
+//                        (exceptionHandling) ->
+//                                exceptionHandling
+//                                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();
     }
@@ -53,6 +57,11 @@ public class AuthServiceSecurityConfig {
         providerManager.setEraseCredentialsAfterAuthentication(false);
 
         return providerManager;
+    }
+
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
     }
 
     @Bean
