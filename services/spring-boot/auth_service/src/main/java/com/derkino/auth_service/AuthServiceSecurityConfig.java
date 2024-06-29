@@ -21,16 +21,36 @@ public class AuthServiceSecurityConfig {
         http
 //                .csrf(csrf ->
 //                        csrf
-//                                .ignoringRequestMatchers("/login"))
+//                                .ignoringRequestMatchers("/login", "/logout"))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .anyRequest().authenticated())
 
+                /* The form should:
+                    1. Perform a post to /login.
+                    2. Needs to include a CSRF Token.
+                    3. Specify the username in a parameter named username.
+                    4. Specify the password in a parameter named password.
+                   If the HTTP parameter named error is found, it indicates the user failed to provide a valid username or password.
+                   If the HTTP parameter named logout is found, it indicates the user has logged out successfully.
+                */
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login")
                                 .permitAll())
+
+                /* The default implementation of SecurityContextRepository is
+                    DelegatingSecurityContextRepository which delegates to:
+                        1. HttpSessionSecurityContextRepository
+                        2. RequestAttributeSecurityContextRepository
+                 */
+
+                // By default, authentication will be persisted and restored on future requests.
+
+                // By default, anonymous authentication is provided automatically
+
+                // By default, Spring Security stands up a /logout endpoint.
 
                 .rememberMe(Customizer.withDefaults());
 
@@ -41,6 +61,7 @@ public class AuthServiceSecurityConfig {
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
+        // By default, password will be compared using PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
         providerManager.setEraseCredentialsAfterAuthentication(false);
