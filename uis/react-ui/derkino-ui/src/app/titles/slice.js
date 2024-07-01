@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { BASE_URL } from '@/http/api';
 import { setError } from '@/app/slice';
 
 export const fetchTitles = createAsyncThunk(
@@ -12,7 +13,7 @@ export const fetchTitles = createAsyncThunk(
     }
 
     try {
-      const response = await fetch(`http://192.168.49.2:32062/api/v1/titles?page=${page}&size=${rowsPerPage}`);
+      const response = await fetch(`${BASE_URL}/titles?page=${page}&size=${rowsPerPage}`);
       const data = await response.json();
 
       if (!response.ok) {
