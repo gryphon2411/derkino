@@ -1,1 +1,3 @@
 rootProject.name = 'data_service'
+
+includeBuild '../commons'
