@@ -10,11 +10,14 @@ EXPOSE 8080
 # Set the working directory
 WORKDIR /home/gradle/project
 
+# Copy the commons library into the Docker image
+COPY commons /home/gradle/commons
+
 # Copy the Gradle configuration files into the Docker image
-COPY build.gradle settings.gradle ./
+COPY data_service/build.gradle data_service/settings.gradle ./
 
 # Copy the source code into the Docker image
-COPY src ./src
+COPY data_service/src ./src
 
 # Build the project inside the Docker container
 RUN gradle build --no-daemon
