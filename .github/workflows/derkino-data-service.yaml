@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v4.1.1
         with:
           # The build context (https://docs.docker.com/build/building/context/), default is "."
-          context: services/spring-boot/data_service/
+          context: services/spring-boot/
           # Filepath to the Dockerfile, default is "./Dockerfile"
           file: services/spring-boot/data_service/Dockerfile
           # Tells the action to upload the image to a registry after building it.
