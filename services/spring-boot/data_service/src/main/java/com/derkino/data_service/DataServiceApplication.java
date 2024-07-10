@@ -25,5 +25,4 @@ public class DataServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DataServiceApplication.class, args);
 	}
-
 }
