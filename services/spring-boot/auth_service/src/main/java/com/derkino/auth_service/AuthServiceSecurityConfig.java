@@ -27,7 +27,7 @@ public class AuthServiceSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf ->
                         csrf
-                                .ignoringRequestMatchers("/login", "/logout"))
+                                .ignoringRequestMatchers("/login", "/logout", "/secured"))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
@@ -43,10 +43,7 @@ public class AuthServiceSecurityConfig {
                 */
                 .formLogin(formLogin ->
                         formLogin
-                                .loginPage("/login")
-                                .defaultSuccessUrl("http://localhost:3000/", true)
-                                .failureUrl("http://localhost:3000/login?error")
-                                .permitAll())
+                                .loginPage("/login").permitAll())
 
                 /* The default implementation of SecurityContextRepository is
                     DelegatingSecurityContextRepository which delegates to:
@@ -86,7 +83,7 @@ public class AuthServiceSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","HEAD"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -94,5 +91,4 @@ public class AuthServiceSecurityConfig {
 
         return source;
     }
-
 }

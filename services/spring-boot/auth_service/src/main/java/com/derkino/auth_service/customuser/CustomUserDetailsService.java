@@ -1,5 +1,6 @@
 package com.derkino.auth_service.customuser;
 
+import com.derkino.commons.security.CustomUser;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
