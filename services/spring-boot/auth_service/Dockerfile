@@ -23,7 +23,7 @@ COPY auth_service/src ./src
 RUN gradle build --no-daemon
 
 # Use OpenJDK 17 for the runtime stage
-FROM openjdk:17-jdk-alpine
+FROM openjdk:17-jdk-slim
 
 # Set the working directory
 WORKDIR /app
