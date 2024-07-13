@@ -22,6 +22,8 @@ public class AuthServiceCacheConfig {
     private int defaultCachePort;
     @Value("${derkino.cache.default.redis.database}")
     private int defaultCacheDatabase;
+    @Value("${derkino.cache.default.redis.username:#{null}}")
+    private String defaultCacheUsername;
     @Value("${derkino.cache.default.redis.password:#{null}}")
     private String defaultCachePassword;
     @Value("${derkino.cache.default.redis.namespace}")
@@ -35,6 +37,7 @@ public class AuthServiceCacheConfig {
         configuration.setHostName(this.defaultCacheHost);
         configuration.setPort(this.defaultCachePort);
         configuration.setDatabase(this.defaultCacheDatabase);
+        configuration.setUsername(this.defaultCacheUsername);
         configuration.setPassword(this.defaultCachePassword);
 
         return new LettuceConnectionFactory(configuration);
