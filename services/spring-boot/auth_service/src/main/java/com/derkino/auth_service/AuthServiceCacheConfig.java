@@ -26,6 +26,8 @@ public class AuthServiceCacheConfig {
     private String defaultCacheUsername;
     @Value("${derkino.cache.default.redis.password:#{null}}")
     private String defaultCachePassword;
+    @Value("${derkino.cache.default.redis.namespace}")
+    private String defaultCacheNamespace;
 
 
     @Bean
@@ -52,10 +54,15 @@ public class AuthServiceCacheConfig {
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration.defaultCacheConfig()
+                .prefixCacheNameWith(this.getCachePrefix())
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new GenericJackson2JsonRedisSerializer()
                         )
                 );
+    }
+
+    private String getCachePrefix() {
+        return this.defaultCacheNamespace + ":";
     }
 }
