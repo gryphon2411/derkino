@@ -65,14 +65,14 @@ spec:
         - name: REDIS_DATABASE
           value: "1"
         - name: REDIS_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: redis-stack-default-user-credentials
-                key: username
+          valueFrom:
+            secretKeyRef:
+              name: redis-stack-default-user-credentials
+              key: username
         - name: REDIS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: redis-stack-default-user-credentials
-                key: password
+          valueFrom:
+            secretKeyRef:
+              name: redis-stack-default-user-credentials
+              key: password
         - name: REDIS_NAMESPACE
           value: derkino:auth
