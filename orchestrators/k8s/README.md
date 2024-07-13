@@ -32,6 +32,7 @@ helm -n kafka-system install kafka bitnami/kafka --version 26.6.2 -f orchestrato
 
 kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
 
+kubectl apply -f orchestrators/k8s/auth-service-deployment.yaml
 kubectl apply -f orchestrators/k8s/data-service-deployment.yaml
 # Perform at least 1 search so all Kafka input topics will be created
 kubectl apply -f orchestrators/k8s/trend-service-deployment.yaml
