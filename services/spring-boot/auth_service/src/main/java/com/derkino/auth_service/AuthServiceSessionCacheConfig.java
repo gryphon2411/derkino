@@ -30,8 +30,6 @@ public class AuthServiceSessionCacheConfig implements BeanClassLoaderAware {
     private int sessionCachePort;
     @Value("${derkino.cache.session.redis.database:0}")
     private int sessionCacheDatabase;
-    @Value("${derkino.cache.session.redis.username:#{null}}")
-    private String sessionCacheUsername;
     @Value("${derkino.cache.session.redis.password#:{null}}")
     private String sessionCachePassword;
 
@@ -48,7 +46,6 @@ public class AuthServiceSessionCacheConfig implements BeanClassLoaderAware {
         configuration.setHostName(this.sessionCacheHost);
         configuration.setPort(this.sessionCachePort);
         configuration.setDatabase(this.sessionCacheDatabase);
-        configuration.setUsername(this.sessionCacheUsername);
         configuration.setPassword(this.sessionCachePassword);
 
         return new LettuceConnectionFactory(configuration);
