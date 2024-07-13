@@ -1,4 +1,15 @@
 apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-stack-default-user-credentials
+type: Opaque
+data:
+  # echo -n default | base64
+  username: ZGVmYXVsdA==
+  # echo -n pu9oq47y7Pgso3RRZLC | base64
+  password: cHU5b3E0N3k3UGdzbzNSUlpMQw==
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: auth-service

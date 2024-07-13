@@ -21,9 +21,10 @@ kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath
 minikube -n postgres-system  service postgres --url
 
 kubectl apply -f orchestrators/k8s/redis-stack-system.yaml && kubectl -n redis-stack-system get pod -w
-echo "default"
-kubectl -n redis-stack-system get secret redis-stack-default-user-credentials -o jsonpath='{.data.password}' | base64 --decode
-minikube -n redis-stack-system service list
+echo "Redis URI: redis://
+$(kubectl -n redis-stack-system get secret redis-stack-default-user-credentials -o jsonpath='{.data.username}' | base64 --decode):
+$(kubectl -n redis-stack-system get secret redis-stack-default-user-credentials -o jsonpath='{.data.password}' | base64 --decode)@
+$(minikube -n redis-stack-system service redis-stack --url | head -n 1 | sed 's/http:\/\///')" | tr -d '\n' && echo
 
 # https://artifacthub.io/packages/helm/bitnami/kafka
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -32,8 +33,8 @@ helm -n kafka-system install kafka bitnami/kafka --version 26.6.2 -f orchestrato
 
 kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
 
-kubectl apply -f orchestrators/k8s/auth-service-deployment.yaml
-kubectl apply -f orchestrators/k8s/data-service-deployment.yaml
+kubectl apply -f orchestrators/k8s/auth-service-deployment.yaml && kubectl get pod -w
+kubectl apply -f orchestrators/k8s/data-service-deployment.yaml && kubectl get pod -w
 # Perform at least 1 search so all Kafka input topics will be created
 kubectl apply -f orchestrators/k8s/trend-service-deployment.yaml
 
