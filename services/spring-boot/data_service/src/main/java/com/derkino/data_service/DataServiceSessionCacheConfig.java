@@ -32,7 +32,7 @@ public class DataServiceSessionCacheConfig implements BeanClassLoaderAware {
     private int sessionCacheDatabase;
     @Value("${derkino.cache.session.redis.username:#{null}}")
     private String sessionCacheUsername;
-    @Value("${derkino.cache.session.redis.password#:{null}}")
+    @Value("${derkino.cache.session.redis.password:#{null}}")
     private String sessionCachePassword;
 
     @Override
