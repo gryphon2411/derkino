@@ -4,10 +4,15 @@ import { setError } from '@/app/slice';
 
 export const loginUser = createAsyncThunk(
   'login/user',
-  async ({ username, password }, { dispatch }) => {
+  async ({ username, password, rememberMe }, { dispatch }) => {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
+
+    if (rememberMe) {
+      formData.append('remember-me', rememberMe)
+    }
+
     formData.append('error', true);
 
     try {

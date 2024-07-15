@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from "next/image";
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { Container, TextField, Button, Box, Card, Snackbar, Alert} from '@mui/material';
+import { Container, TextField, Button, Box, Card, Snackbar, Alert, Checkbox, FormControlLabel} from '@mui/material';
 import { loginUser } from '@/pages/login/slice';
 import { clearError } from '@/app/slice';
 
@@ -14,6 +14,7 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   
   const router = useRouter();
   const loginStatus = useSelector((state) => state.login.status);
@@ -24,7 +25,7 @@ export default function LoginPage() {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    dispatch(loginUser({ username, password }));
+    dispatch(loginUser({ username, password, rememberMe }));
   };
 
   if (loginStatus === 'succeeded') {
@@ -82,6 +83,17 @@ export default function LoginPage() {
               margin="normal"
               required
               fullWidth
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  name="rememberMe"
+                  color="primary"
+                />
+              }
+              label="Remember me"
             />
             <Button type="submit" variant="contained" 
               sx={{ 
