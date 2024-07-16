@@ -34,6 +34,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      # Change to the directory where the package.json file is located
+      - name: Change directory
+        run: cd uis/react-ui/derkino-ui/
       - name: Detect package manager
         id: detect-package-manager
         run: |
