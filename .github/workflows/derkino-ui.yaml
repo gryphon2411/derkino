@@ -34,11 +34,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Change to the directory where the package.json file is located
-      - name: Change directory
-        run: cd uis/react-ui/derkino-ui/
       - name: Detect package manager
         id: detect-package-manager
+        # Change to the directory where the package.json file is located
+        working-directory: uis/react-ui/derkino-ui/
         run: |
           if [ -f "${{ github.workspace }}/yarn.lock" ]; then
             echo "manager=yarn" >> $GITHUB_OUTPUT
