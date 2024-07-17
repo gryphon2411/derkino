@@ -24,16 +24,16 @@ export default function TitlesGrid() {
   useEffect(() => {
     window.addEventListener('scroll', handleInfinitScroll);
     return () => window.removeEventListener('scroll', handleInfinitScroll);
-  }, []);
+  }, [handleInfinitScroll]);
 
-  const handleInfinitScroll = () => {
+  const handleInfinitScroll = useCallback(() => {
     if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
       return; 
     }
-
+  
     dispatch(setPage(page + 1));
     dispatch(fetchTitles());
-  };
+  }, [dispatch, page]);  
 
   return (
     <div>
