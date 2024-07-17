@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { Container, TextField, Button, Box, Card, Snackbar, Alert, Checkbox, FormControlLabel} from '@mui/material';
-import { loginUser } from '@/pages-slices/login/slice';
+import { loginUser } from '@/pages/login/slice';
 import { clearError } from '@/app/slice';
 
 export default function LoginPage() {
