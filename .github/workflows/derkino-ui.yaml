@@ -1,5 +1,5 @@
 # The name of this workflow.
-name: derkino ui service ci
+name: derkino ui ci
 
 # Specifies that this workflow should run on every push event for the branches in the list.
 on:
