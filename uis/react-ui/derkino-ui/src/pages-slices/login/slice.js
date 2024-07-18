@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { BASE_URL } from '@/http/api';
+import { API_HOST_URL } from '@/http/api';
 import { setError } from '@/app/slice';
 
 export const loginUser = createAsyncThunk(
@@ -16,7 +16,7 @@ export const loginUser = createAsyncThunk(
     formData.append('error', true);
 
     try {
-      const response = await fetch(`${BASE_URL}/login`, {
+      const response = await fetch(`${API_HOST_URL}/login`, {
         method: 'POST',
         body: formData,
       });
