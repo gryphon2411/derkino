@@ -13,8 +13,6 @@ export const loginUser = createAsyncThunk(
       formData.append('remember-me', rememberMe)
     }
 
-    formData.append('error', true);
-
     try {
       const response = await fetch(`${API_HOST_URL}/auth/login`, {
         method: 'POST',
