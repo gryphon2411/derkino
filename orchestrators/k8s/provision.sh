@@ -91,7 +91,42 @@ create_job_and_wait() {
     kubectl -n $namespace get pods -l job-name=$job_name
 }
 
+create_ingress_and_wait() {
+    local yaml_file=$1
 
+    set -x
+    minikube addons enable ingress
+    set +x
+
+    set -x
+    kubectl apply -f $yaml_file
+    set +x
+
+    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+
+    if [ -z "$namespace" ]; then
+        namespace="default"
+    fi
+
+    local ingress_name=$(kubectl -n $namespace get ingress -o jsonpath='{.items[0].metadata.name}')
+
+    echo -n -e "\nCreating ingress.networking.k8s.io/$ingress_name..."
+    while [[ $(kubectl -n $namespace get ingress $ingress_name -o 'jsonpath={..status.loadBalancer.ingress[0].ip}') == "" ]]; do
+        sleep 1
+        echo -n "."
+    done
+    echo
+
+    minikube_ip=$(minikube ip)
+    hostname="derkino.com"
+
+    if ! grep -q "$minikube_ip $hostname" /etc/hosts; then
+        echo "$hostname $minikube_ip"
+        echo "$minikube_ip $hostname" | sudo tee -a /etc/hosts
+    fi
+
+    kubectl -n $namespace describe ingress $ingress_name --show-events=false
+}
 
 helm_install_and_wait() {
     local namespace=$1
@@ -190,6 +225,10 @@ if confirm "Grafana system"; then
     # - Name: prometheus-server
     # - Prometheus server URL: http://prometheus-server.prometheus-system
     # Query (permanent view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
+fi
+
+if confirm "Gateway ingress (derkino.com)"; then
+    create_ingress_and_wait orchestrators/k8s/gateway-ingress.yaml
 fi
 
 end_time=$(date +%s)

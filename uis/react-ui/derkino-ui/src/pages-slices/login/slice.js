@@ -16,7 +16,7 @@ export const loginUser = createAsyncThunk(
     formData.append('error', true);
 
     try {
-      const response = await fetch(`${API_HOST_URL}/login`, {
+      const response = await fetch(`${API_HOST_URL}auth/login`, {
         method: 'POST',
         body: formData,
       });

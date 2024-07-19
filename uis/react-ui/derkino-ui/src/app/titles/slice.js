@@ -13,7 +13,7 @@ export const fetchTitles = createAsyncThunk(
     }
 
     try {
-      const response = await fetch(`${API_HOST_URL}/titles?page=${page}&size=${rowsPerPage}`);
+      const response = await fetch(`${API_HOST_URL}data/titles?page=${page}&size=${rowsPerPage}`);
       const data = await response.json();
 
       if (!response.ok) {

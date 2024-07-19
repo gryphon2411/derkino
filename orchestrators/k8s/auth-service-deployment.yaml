@@ -17,7 +17,7 @@ spec:
   type: NodePort
   ports:
     - name: http
-      port: 8080
+      port: 8081
       targetPort: 8080
       protocol: TCP
   selector:
@@ -47,7 +47,7 @@ spec:
         - name: SERVICE_PORT
           value: "8080"
         - name: SERVICE_HOST_PREFIX
-          value: /api/v1
+          value: /auth
         - name: SERVICE_LOGGING_LEVEL
           value: debug
 
