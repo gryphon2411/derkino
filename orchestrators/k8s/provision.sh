@@ -13,15 +13,17 @@ confirm() {
 create_deploy_and_wait() {
     local yaml_file=$1
 
+    set -x
     kubectl apply -f $yaml_file
+    set +x
 
-    local namespace=$(yq e 'select(.kind == "Namespace") | .metadata.name' $yaml_file)
+    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
 
     if [ -z "$namespace" ]; then
         namespace="default"
     fi
 
-    local deployment_name=$(kubectl -n $namespace get deployments -o jsonpath='{.items[0].metadata.name}')
+    local deployment_name=$(yq e 'select(.kind == "Deployment") | .metadata.name' $yaml_file)
 
     echo -n -e "\nCreating deployment.apps/$deployment_name..."
     while [[ $(kubectl -n $namespace get deployments $deployment_name -o 'jsonpath={..status.conditions[?(@.type=="Available")].status}') != "True" ]]; do
@@ -38,9 +40,12 @@ create_deploy_and_wait() {
 create_statefulset_and_wait() {
     local yaml_file=$1
 
+    set -x
     kubectl apply -f $yaml_file
+    set +x
 
-    local namespace=$(yq e 'select(.kind == "Namespace") | .metadata.name' $yaml_file)
+    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+    
     if [ -z "$namespace" ]; then
         namespace="default"
     fi
@@ -69,9 +74,11 @@ create_statefulset_and_wait() {
 create_job_and_wait() {
     local yaml_file=$1
 
+    set -x
     kubectl apply -f $yaml_file
+    set +x
 
-    local namespace=$(yq e 'select(.kind == "Job") | .metadata.namespace' $yaml_file)
+    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
 
     if [ -z "$namespace" ]; then
         namespace="default"
@@ -135,7 +142,9 @@ helm_install_and_wait() {
     local version=$4
     local values_file=$5
 
+    set -x
     helm -n $namespace install $release_name $chart --version $version -f $values_file --create-namespace
+    set +x
 
     sleep 2
 
@@ -154,7 +163,13 @@ start_time=$(date +%s)
 
 echo -e "\nProvisioning Derkino k8s cluster...\n"
 
-minikube start --cpus=max --memory=max
+if minikube status | grep -q "host: Running"; then
+    echo "Minikube is already running."
+else
+    set -x
+    minikube start --cpus=max --memory=max
+    set +x
+fi
 
 if confirm "Mongodb system"; then
     create_statefulset_and_wait orchestrators/k8s/mongodb-system.yaml
