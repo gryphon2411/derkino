@@ -46,10 +46,13 @@ spec:
         env:
         - name: SERVICE_PORT
           value: "8080"
-        - name: SERVICE_HOST_PREFIX
-          value: /auth
+        - name: SERVICE_PREFIX_PATH
+          value: /api/v1/auth
         - name: SERVICE_LOGGING_LEVEL
           value: debug
+
+        - name: FORM_LOGIN_REDIRECT_URL
+          value: http://local.derkino.com
 
         - name: KAFKA_HOSTS
           value: kafka-controller-0.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-1.kafka-controller-headless.kafka-system.svc.cluster.local:9092,kafka-controller-2.kafka-controller-headless.kafka-system.svc.cluster.local:9092

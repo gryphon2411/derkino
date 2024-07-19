@@ -46,8 +46,8 @@ spec:
         env:
         - name: SERVICE_PORT
           value: "8080"
-        - name: SERVICE_HOST_PREFIX
-          value: /data
+        - name: SERVICE_PREFIX_PATH
+          value: /api/v1/data
         - name: SERVICE_LOGGING_LEVEL
           value: debug
 
