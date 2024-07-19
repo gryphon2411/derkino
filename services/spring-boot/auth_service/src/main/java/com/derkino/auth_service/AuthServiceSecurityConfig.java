@@ -23,6 +23,9 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class AuthServiceSecurityConfig {
+    @Value("${derkino.server.prefix-path}")
+    private String serverPrefixPath;
+
     @Value("${derkino.security.form-login.redirect-url}")
     private String formLoginRedirectUrl;
 
@@ -32,7 +35,10 @@ public class AuthServiceSecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf ->
                         csrf
-                                .ignoringRequestMatchers("/login", "/logout", "/secured"))
+                                .ignoringRequestMatchers(
+                                        this.serverPrefixPath + "/login",
+                                        this.serverPrefixPath + "/logout",
+                                        this.serverPrefixPath + "/secured"))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
@@ -49,6 +55,7 @@ public class AuthServiceSecurityConfig {
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login").permitAll()
+                                .loginProcessingUrl(this.serverPrefixPath + "/login")
                                 .defaultSuccessUrl(this.formLoginRedirectUrl, true)
                                 .failureUrl(this.formLoginRedirectUrl + "/login?error"))
 
@@ -62,7 +69,10 @@ public class AuthServiceSecurityConfig {
 
                 // By default, anonymous authentication is provided automatically
 
-                // By default, Spring Security stands up a /logout endpoint.
+                .logout(logout ->
+                        logout
+                                .logoutSuccessUrl(this.serverPrefixPath + "/login?logout")
+                                .logoutUrl(this.serverPrefixPath + "/logout"))
 
                 .rememberMe(rememberMe ->
                         rememberMe
