@@ -17,7 +17,7 @@ create_deploy_and_wait() {
     kubectl apply -f $yaml_file
     set +x
 
-    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+    local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
     if [ -z "$namespace" ]; then
         namespace="default"
@@ -44,7 +44,7 @@ create_statefulset_and_wait() {
     kubectl apply -f $yaml_file
     set +x
 
-    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+    local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
     
     if [ -z "$namespace" ]; then
         namespace="default"
@@ -78,7 +78,7 @@ create_job_and_wait() {
     kubectl apply -f $yaml_file
     set +x
 
-    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+    local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
     if [ -z "$namespace" ]; then
         namespace="default"
@@ -105,11 +105,15 @@ create_ingress_and_wait() {
     minikube addons enable ingress
     set +x
 
+    sleep 15
+
     set -x
     kubectl apply -f $yaml_file
     set +x
 
-    local namespace=$(yq e '.metadata.namespace // "default"' $yaml_file | head -n 1)
+    sleep 5
+
+    local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
     if [ -z "$namespace" ]; then
         namespace="default"
@@ -125,11 +129,11 @@ create_ingress_and_wait() {
     echo
 
     minikube_ip=$(minikube ip)
-    hostname="derkino.com"
+    hostname="local.derkino.com"
 
     if ! grep -q "$minikube_ip $hostname" /etc/hosts; then
         echo "$hostname $minikube_ip"
-        echo "$minikube_ip $hostname" | sudo tee -a /etc/hosts
+        echo -e "$minikube_ip $hostname" | sudo tee -a /etc/hosts
     fi
 
     kubectl -n $namespace describe ingress $ingress_name --show-events=false
@@ -242,7 +246,7 @@ if confirm "Grafana system"; then
     # Query (permanent view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
 fi
 
-if confirm "Gateway ingress (derkino.com)"; then
+if confirm "Gateway ingress (local.derkino.com)"; then
     create_ingress_and_wait orchestrators/k8s/gateway-ingress.yaml
 fi
 
