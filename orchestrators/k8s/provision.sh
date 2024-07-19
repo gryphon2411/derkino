@@ -105,13 +105,11 @@ create_ingress_and_wait() {
     minikube addons enable ingress
     set +x
 
-    sleep 15
+    sleep 20
 
     set -x
     kubectl apply -f $yaml_file
     set +x
-
-    sleep 5
 
     local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
@@ -206,6 +204,7 @@ $(minikube -n redis-stack-system service redis-stack --url | head -n 1 | sed 's/
 fi
 
 if confirm "Kafka system"; then
+    # https://artifacthub.io/packages/helm/bitnami/kafka
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm_install_and_wait kafka-system kafka bitnami/kafka 26.6.2 orchestrators/k8s/charts/kafka/values.yaml
     echo
@@ -218,6 +217,7 @@ fi
 
 if confirm "Derkino data service"; then
     create_deploy_and_wait orchestrators/k8s/data-service-deployment.yaml
+    # Perform at least 1 data search so all Kafka input topics will be created
 fi
 
 if confirm "Derkino trend service"; then
@@ -229,11 +229,14 @@ if confirm "Derkino ui"; then
 fi
 
 if confirm "Prometheus system"; then
+    # https://artifacthub.io/packages/helm/prometheus-community/prometheus
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm_install_and_wait prometheus-system prometheus prometheus-community/prometheus 25.8.2 orchestrators/k8s/charts/prometheus/values.yaml
+    # Expression (temporary view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
 fi
 
 if confirm "Grafana system"; then
+    # https://artifacthub.io/packages/helm/grafana/grafana?modal=install
     helm repo add grafana https://grafana.github.io/helm-charts
     helm_install_and_wait grafana-system grafana grafana/grafana 7.0.19 orchestrators/k8s/charts/grafana/values.yaml
     echo "admin"
