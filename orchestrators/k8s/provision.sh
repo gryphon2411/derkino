@@ -170,6 +170,10 @@ if confirm "Derkino trend service"; then
     create_deploy_and_wait orchestrators/k8s/trend-service-deployment.yaml
 fi
 
+if confirm "Derkino ui"; then
+    create_deploy_and_wait orchestrators/k8s/ui-deployment.yaml
+fi
+
 if confirm "Prometheus system"; then
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm_install_and_wait prometheus-system prometheus prometheus-community/prometheus 25.8.2 orchestrators/k8s/charts/prometheus/values.yaml
