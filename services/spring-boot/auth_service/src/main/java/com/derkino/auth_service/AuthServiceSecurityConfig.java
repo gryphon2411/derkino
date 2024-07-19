@@ -2,6 +2,7 @@ package com.derkino.auth_service;
 
 import com.derkino.auth_service.customuser.CustomUserDetailsService;
 import com.derkino.auth_service.customuser.CustomUserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,9 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class AuthServiceSecurityConfig {
+    @Value("${derkino.security.form-login.redirect-url}")
+    private String formLoginRedirectUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -44,7 +48,9 @@ public class AuthServiceSecurityConfig {
                 */
                 .formLogin(formLogin ->
                         formLogin
-                                .loginPage("/login").permitAll())
+                                .loginPage("/login").permitAll()
+                                .defaultSuccessUrl(this.formLoginRedirectUrl, true)
+                                .failureUrl(this.formLoginRedirectUrl + "/login?error"))
 
                 /* The default implementation of SecurityContextRepository is
                     DelegatingSecurityContextRepository which delegates to:
