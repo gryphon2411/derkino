@@ -13,9 +13,8 @@ confirm() {
 create_deploy_and_wait() {
     local yaml_file=$1
 
-    set -x
+    echo -e "\nkubectl apply -f $yaml_file"
     kubectl apply -f $yaml_file
-    set +x
 
     local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
@@ -40,9 +39,8 @@ create_deploy_and_wait() {
 create_statefulset_and_wait() {
     local yaml_file=$1
 
-    set -x
+    echo -e "\nkubectl apply -f $yaml_file"
     kubectl apply -f $yaml_file
-    set +x
 
     local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
     
@@ -74,9 +72,8 @@ create_statefulset_and_wait() {
 create_job_and_wait() {
     local yaml_file=$1
 
-    set -x
+    echo -e "\nkubectl apply -f $yaml_file"
     kubectl apply -f $yaml_file
-    set +x
 
     local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
@@ -101,15 +98,13 @@ create_job_and_wait() {
 create_ingress_and_wait() {
     local yaml_file=$1
 
-    set -x
+    echo -e "\nminikube addons enable ingress"
     minikube addons enable ingress
-    set +x
 
     sleep 20
 
-    set -x
+    echo -e "\nkubectl apply -f $yaml_file"
     kubectl apply -f $yaml_file
-    set +x
 
     local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
 
@@ -135,6 +130,8 @@ create_ingress_and_wait() {
     fi
 
     kubectl -n $namespace describe ingress $ingress_name --show-events=false
+
+    echo -e "\nhttp://${hostname}"
 }
 
 helm_install_and_wait() {
@@ -144,9 +141,8 @@ helm_install_and_wait() {
     local version=$4
     local values_file=$5
 
-    set -x
+    echo -e "\nhelm -n $namespace install $release_name $chart --version $version -f $values_file --create-namespace"
     helm -n $namespace install $release_name $chart --version $version -f $values_file --create-namespace
-    set +x
 
     sleep 2
 
@@ -168,9 +164,8 @@ echo -e "\nProvisioning Derkino k8s cluster...\n"
 if minikube status | grep -q "host: Running"; then
     echo "Minikube is already running."
 else
-    set -x
+    echo -e "\nminikube start --cpus=max --memory=max"
     minikube start --cpus=max --memory=max
-    set +x
 fi
 
 if confirm "Mongodb system"; then
