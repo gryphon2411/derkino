@@ -1,5 +1,23 @@
 #!/bin/bash
 
+CLUSTER_ENVIRONMENT=""
+
+prompt_cluster_environment() {
+    while true; do
+        echo
+        read -p "Select cluster environment (local/dev, default: local): " env
+        env=${env:-local}
+        case $env in
+            local|dev ) 
+                CLUSTER_ENVIRONMENT=$env
+                break;;
+            * ) echo "Invalid cluster environment. Please enter 'local' or 'dev'.";;
+        esac
+    done
+    echo
+}
+
+
 confirm() {
     echo
     read -p "Do you wish to create $1? (y/N) " yn
@@ -122,10 +140,15 @@ create_ingress_and_wait() {
     echo
 
     minikube_ip=$(minikube ip)
-    hostname="local.derkino.com"
+
+    if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        hostname="dev.derkino.com"
+    else
+        hostname="local.derkino.com"
+    fi
 
     if ! grep -q "$minikube_ip $hostname" /etc/hosts; then
-        echo "$hostname $minikube_ip"
+        echo -e "\n$hostname $minikube_ip\n"
         echo -e "$minikube_ip $hostname" | sudo tee -a /etc/hosts
     fi
 
@@ -159,7 +182,9 @@ helm_install_and_wait() {
 
 start_time=$(date +%s)
 
-echo -e "\nProvisioning Derkino k8s cluster...\n"
+prompt_cluster_environment
+
+echo -e "\nProvisioning Derkino k8s $CLUSTER_ENVIRONMENT cluster...\n"
 
 if minikube status | grep -q "host: Running"; then
     echo "Minikube is already running."
@@ -207,8 +232,13 @@ if confirm "Kafka system"; then
 fi
 
 if confirm "Derkino auth service"; then
-    create_deploy_and_wait orchestrators/k8s/auth-service-deployment.yaml
+    if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        create_deploy_and_wait orchestrators/k8s/dev-auth-service-deployment.yaml
+    else
+        create_deploy_and_wait orchestrators/k8s/auth-service-deployment.yaml
+    fi
 fi
+
 
 if confirm "Derkino data service"; then
     create_deploy_and_wait orchestrators/k8s/data-service-deployment.yaml
@@ -220,7 +250,11 @@ if confirm "Derkino trend service"; then
 fi
 
 if confirm "Derkino ui"; then
-    create_deploy_and_wait orchestrators/k8s/ui-deployment.yaml
+    if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        create_deploy_and_wait orchestrators/k8s/dev-ui-deployment.yaml
+    else
+        create_deploy_and_wait orchestrators/k8s/ui-deployment.yaml
+    fi
 fi
 
 if confirm "Prometheus system"; then
@@ -244,8 +278,12 @@ if confirm "Grafana system"; then
     # Query (permanent view): kafka_server_brokertopicmetrics_messagesinpersec_count{topic="title-searches"}
 fi
 
-if confirm "Gateway ingress (local.derkino.com)"; then
-    create_ingress_and_wait orchestrators/k8s/gateway-ingress.yaml
+if confirm "Gateway ingress"; then
+    if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        create_deploy_and_wait orchestrators/k8s/dev-gateway-ingress.yaml
+    else
+        create_deploy_and_wait orchestrators/k8s/gateway-ingress.yaml
+    fi
 fi
 
 end_time=$(date +%s)
@@ -254,4 +292,4 @@ time_duration=$((end_time - start_time))
 minutes=$((time_duration / 60))
 seconds=$((time_duration % 60))
 
-echo -e "\nProvisioning Derkino k8s cluster done. took ${minutes}m ${seconds}s\n"
+echo -e "\nProvisioned Derkino k8s $CLUSTER_ENVIRONMENT cluster. took ${minutes}m ${seconds}s\n"
