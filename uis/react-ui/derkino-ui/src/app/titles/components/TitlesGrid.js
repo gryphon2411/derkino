@@ -13,7 +13,15 @@ export default function TitlesGrid() {
   const titles = useSelector((state) => state.titles.content);
   const page = useSelector((state) => state.titles.page);
   const status = useSelector((state) => state.titles.status);
+
+  const handleInfinitScroll = useCallback(() => {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
+      return; 
+    }
   
+    dispatch(setPage(page + 1));
+    dispatch(fetchTitles());
+  }, [dispatch, page]);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -25,15 +33,6 @@ export default function TitlesGrid() {
     window.addEventListener('scroll', handleInfinitScroll);
     return () => window.removeEventListener('scroll', handleInfinitScroll);
   }, [handleInfinitScroll]);
-
-  const handleInfinitScroll = useCallback(() => {
-    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
-      return; 
-    }
-  
-    dispatch(setPage(page + 1));
-    dispatch(fetchTitles());
-  }, [dispatch, page]);  
 
   return (
     <div>
