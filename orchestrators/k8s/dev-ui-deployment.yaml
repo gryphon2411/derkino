@@ -31,6 +31,7 @@ spec:
       containers:
       - name: dev-ui
         image: gryphon2411/derkino-ui:dev
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:
