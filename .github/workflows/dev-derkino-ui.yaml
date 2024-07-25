@@ -5,7 +5,7 @@ name: derkino ui dev ci
 on:
   push:
     branches:
-      - devel
+      - develop
     paths:
       - uis/react-ui/derkino-ui/**
   
