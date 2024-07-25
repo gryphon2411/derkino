@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Grid, CircularProgress, Card, CardContent, CardMedia, CardActionArea, Typography 
