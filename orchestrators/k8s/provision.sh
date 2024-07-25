@@ -148,7 +148,7 @@ create_ingress_and_wait() {
     fi
 
     if ! grep -q "$minikube_ip $hostname" /etc/hosts; then
-        echo -e "\n$hostname $minikube_ip\n"
+        echo -e "\n$minikube_ip $hostname\n"
         echo -e "$minikube_ip $hostname" | sudo tee -a /etc/hosts
     fi
 
@@ -280,9 +280,9 @@ fi
 
 if confirm "Gateway ingress"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
-        create_deploy_and_wait orchestrators/k8s/dev-gateway-ingress.yaml
+        create_ingress_and_wait orchestrators/k8s/dev-gateway-ingress.yaml
     else
-        create_deploy_and_wait orchestrators/k8s/gateway-ingress.yaml
+        create_ingress_and_wait orchestrators/k8s/gateway-ingress.yaml
     fi
 fi
 
