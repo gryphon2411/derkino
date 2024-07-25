@@ -233,8 +233,10 @@ fi
 
 if confirm "Derkino auth service"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        kubectl delete -f orchestrators/k8s/auth-service-deployment.yaml
         create_deploy_and_wait orchestrators/k8s/dev-auth-service-deployment.yaml
     else
+        kubectl delete -f orchestrators/k8s/dev-auth-service-deployment.yaml
         create_deploy_and_wait orchestrators/k8s/auth-service-deployment.yaml
     fi
 fi
@@ -251,8 +253,10 @@ fi
 
 if confirm "Derkino ui"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        kubectl delete -f orchestrators/k8s/ui-deployment.yaml
         create_deploy_and_wait orchestrators/k8s/dev-ui-deployment.yaml
     else
+        kubectl delete -f orchestrators/k8s/dev-ui-deployment.yaml
         create_deploy_and_wait orchestrators/k8s/ui-deployment.yaml
     fi
 fi
@@ -280,8 +284,10 @@ fi
 
 if confirm "Gateway ingress"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
+        kubectl delete -f orchestrators/k8s/gateway-ingress.yaml
         create_ingress_and_wait orchestrators/k8s/dev-gateway-ingress.yaml
     else
+        kubectl delete -f orchestrators/k8s/dev-gateway-ingress.yaml
         create_ingress_and_wait orchestrators/k8s/gateway-ingress.yaml
     fi
 fi
