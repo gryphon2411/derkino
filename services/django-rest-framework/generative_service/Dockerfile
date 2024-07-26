@@ -12,6 +12,7 @@ WORKDIR /app
 COPY . /app/
 
 # Install any needed packages specified in requirements.txt
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r requirements.txt
 
 # Expose the port uWSGI will listen on
