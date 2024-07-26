@@ -11,8 +11,13 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app/
 
-# Install any needed packages specified in requirements.txt
+# Install PyTorch, torchvision, and torchaudio from PyTorch wheel files
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# Install build tools (includes C compiler)
+RUN apt update && apt install -y build-essential
+
+# Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 
 # Expose the port uWSGI will listen on
