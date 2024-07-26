@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+PREFIX_PATH = "api/v1"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('generative/', include('generative_service_app.urls'))
+    path(f'{PREFIX_PATH}/generative/', include('generative_service_app.urls'))
 ]
