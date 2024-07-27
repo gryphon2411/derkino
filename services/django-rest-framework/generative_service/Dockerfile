@@ -14,8 +14,8 @@ COPY . /app/
 # Install PyTorch, torchvision, and torchaudio from PyTorch wheel files
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-# Install build tools (includes C compiler)
-RUN apt update && apt install -y build-essential
+# Install C compiler and the Python development headers
+RUN apt-get update && apt-get install -y build-essential python-dev-is-python3
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
