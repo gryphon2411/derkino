@@ -251,6 +251,10 @@ if confirm "Derkino trend service"; then
     create_deploy_and_wait orchestrators/k8s/trend-service-deployment.yaml
 fi
 
+if confirm "Derkino generative service"; then
+    create_deploy_and_wait orchestrators/k8s/generative-service-deployment.yaml
+fi
+
 if confirm "Derkino ui"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
         kubectl delete -f orchestrators/k8s/ui-deployment.yaml
