@@ -14,16 +14,16 @@ public class TitleController {
     TitleService service;
 
     @GetMapping("/titles/{id}")
-    public Title getTitle(@PathVariable String id) {
+    public TitleDto getTitle(@PathVariable String id) {
         return service.getTitle(id);
     }
 
     @GetMapping("/titles")
-    public Page<Title> getTitlesPage(Pageable pageable,
-                                     @RequestParam(required = false) String titleType,
-                                     @RequestParam(required = false) String primaryTitle,
-                                     @RequestParam(required = false) Boolean isAdult,
-                                     @RequestParam(required = false) List<String> genres) {
+    public Page<TitleDto> getTitlesPage(Pageable pageable,
+                                        @RequestParam(required = false) String titleType,
+                                        @RequestParam(required = false) String primaryTitle,
+                                        @RequestParam(required = false) Boolean isAdult,
+                                        @RequestParam(required = false) List<String> genres) {
         return service.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres);
     }
 }
