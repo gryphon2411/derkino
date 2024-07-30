@@ -23,11 +23,14 @@ public class DataServiceSecurityConfig {
                         csrf
                                 .ignoringRequestMatchers(
                                         this.serverPrefixPath + "/titles",
-                                        this.serverPrefixPath + "/secured"))
+                                        this.serverPrefixPath + "/secured",
+                                        this.serverPrefixPath + "/titles",
+                                        this.serverPrefixPath + "/titles/[a-zA-Z0-9]+$"))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/login", "/logout").denyAll()
+                                .requestMatchers( this.serverPrefixPath + "/titles/[a-zA-Z0-9]+$").permitAll()
                                 .anyRequest().authenticated());
 
                 // By default, authentication will be persisted and restored on future requests.
