@@ -1,3 +1,4 @@
+import requests
 from django.apps import apps
 from rest_framework import status
 from rest_framework.response import Response
@@ -8,6 +9,9 @@ from generative_service_app.generative_models.phi3 import get_phi3_generative_mo
 
 
 class TitleFacts(APIView):
+    GENERATIVE_MODEL_NAME = apps.get_app_config("generative_service_app").generative_model_name
+    DATA_SERVICE_HOST = apps.get_app_config("generative_service_app").data_service_host
+
     def __init__(self):
         super().__init__()
 
@@ -15,25 +19,35 @@ class TitleFacts(APIView):
 
     def _get_generative_model(self):
         _generative_model = None
-        generative_model_name = apps.get_app_config("generative_service_app").generative_model_name
 
-        if generative_model_name == "gemma":
+        if self.GENERATIVE_MODEL_NAME == "gemma":
             _generative_model = get_gemma_generative_model()
-        elif generative_model_name == "phi3":
+        elif self.GENERATIVE_MODEL_NAME == "phi3":
             _generative_model = get_phi3_generative_model()
 
         return _generative_model
 
-    def post(self, request, format=None):
-        title_name = request.data.get('title_name')
-        title_year = request.data.get('title_year')
-
-        if not title_name or not title_year:
+    def post(self, request, title_id, format=None):
+        response = requests.get(f"{self.DATA_SERVICE_HOST}/api/v1/data/titles/{title_id}")
+        if response.status_code != 200:
             return Response(
-                {"error": "Both 'title_name' and 'title_year' are required."},
+                {"error": f"Unable to fetch title '{title_id}' from data service at {self.DATA_SERVICE_HOST}."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        title_name, title_year = self._get_title_name_and_year(response)
 
         facts = self._generative_model.prompt_title_facts(title_name, title_year)
 
         return Response({"facts": facts})
+
+    def _get_title_name_and_year(self, response):
+        data = response.json()
+        title_name = data.get('primaryTitle')
+
+        start_year = data.get('startYear')
+        end_year = data.get('endYear')
+
+        title_year = end_year if end_year else start_year
+
+        return title_name, title_year
