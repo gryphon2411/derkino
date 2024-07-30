@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,13 +24,15 @@ public class DataServiceSecurityConfig {
                         csrf
                                 .ignoringRequestMatchers(
                                         this.serverPrefixPath + "/secured",
-                                        this.serverPrefixPath + "/titles",
-                                        this.serverPrefixPath + "/titles/[a-zA-Z0-9]+$"))
+                                        this.serverPrefixPath + "/titles")
+                                .ignoringRequestMatchers(RegexRequestMatcher.regexMatcher(
+                                        this.serverPrefixPath + "/titles/[a-fA-F0-9]{24}")))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/login", "/logout").denyAll()
-                                .requestMatchers( this.serverPrefixPath + "/titles/[a-zA-Z0-9]+$").permitAll()
+                                .requestMatchers(RegexRequestMatcher.regexMatcher(
+                                        this.serverPrefixPath + "/titles/[a-fA-F0-9]{24}")).permitAll()
                                 .anyRequest().authenticated());
 
                 // By default, authentication will be persisted and restored on future requests.
