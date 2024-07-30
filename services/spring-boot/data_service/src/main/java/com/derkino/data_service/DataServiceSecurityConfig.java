@@ -22,7 +22,6 @@ public class DataServiceSecurityConfig {
                 .csrf(csrf ->
                         csrf
                                 .ignoringRequestMatchers(
-                                        this.serverPrefixPath + "/titles",
                                         this.serverPrefixPath + "/secured",
                                         this.serverPrefixPath + "/titles",
                                         this.serverPrefixPath + "/titles/[a-zA-Z0-9]+$"))
