@@ -10,7 +10,7 @@ from generative_service_app.generative_models.phi3 import get_phi3_generative_mo
 
 class TitleFacts(APIView):
     GENERATIVE_MODEL_NAME = apps.get_app_config("generative_service_app").generative_model_name
-    DATA_SERVICE_HOST = apps.get_app_config("generative_service_app").data_service_host
+    DATA_SERVICE_URL = apps.get_app_config("generative_service_app").data_service_url
 
     def __init__(self):
         super().__init__()
@@ -28,10 +28,10 @@ class TitleFacts(APIView):
         return _generative_model
 
     def post(self, request, title_id, format=None):
-        response = requests.get(f"{self.DATA_SERVICE_HOST}/api/v1/data/titles/{title_id}")
+        response = requests.get(f"{self.DATA_SERVICE_URL}/titles/{title_id}")
         if response.status_code != 200:
             return Response(
-                {"error": f"Unable to fetch title '{title_id}' from data service at {self.DATA_SERVICE_HOST}."},
+                {"error": f"Unable to fetch title '{title_id}' from data service at {self.DATA_SERVICE_URL}."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

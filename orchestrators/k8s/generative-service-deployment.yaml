@@ -48,5 +48,5 @@ spec:
               key: token
         - name: GENERATIVE_MODEL_NAME
           value: phi3
-        - name: DATA_SERVICE_HOST
-          value: data-service:8082
+        - name: DATA_SERVICE_URL
+          value: data-service:8082/api/v1/data
