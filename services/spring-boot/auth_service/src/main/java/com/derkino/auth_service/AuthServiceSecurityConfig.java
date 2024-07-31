@@ -36,12 +36,14 @@ public class AuthServiceSecurityConfig {
                 .csrf(csrf ->
                         csrf
                                 .ignoringRequestMatchers(
+                                        this.serverPrefixPath + "/non-secured",
+                                        this.serverPrefixPath + "/secured",
                                         this.serverPrefixPath + "/login",
-                                        this.serverPrefixPath + "/logout",
-                                        this.serverPrefixPath + "/secured"))
+                                        this.serverPrefixPath + "/logout"))
 
                 .authorizeHttpRequests(authorize ->
                         authorize
+                                .requestMatchers(this.serverPrefixPath + "/non-secured").permitAll()
                                 .anyRequest().authenticated())
 
                 /* The form should:

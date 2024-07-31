@@ -23,6 +23,7 @@ public class DataServiceSecurityConfig {
                 .csrf(csrf ->
                         csrf
                                 .ignoringRequestMatchers(
+                                        this.serverPrefixPath + "/non-secured",
                                         this.serverPrefixPath + "/secured",
                                         this.serverPrefixPath + "/titles")
                                 .ignoringRequestMatchers(RegexRequestMatcher.regexMatcher(
@@ -30,6 +31,7 @@ public class DataServiceSecurityConfig {
 
                 .authorizeHttpRequests(authorize ->
                         authorize
+                                .requestMatchers(this.serverPrefixPath + "/non-secured").permitAll()
                                 .requestMatchers("/login", "/logout").denyAll()
                                 .requestMatchers(RegexRequestMatcher.regexMatcher(
                                         this.serverPrefixPath + "/titles/[a-fA-F0-9]{24}")).permitAll()
