@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { CircularProgress } from '@mui/material';
-import { fetchTitle, setTitle } from '@/app/titles/[id]/slice';
+import { fetchTitle, setTitle, fetchFacts } from '@/app/titles/[id]/slice';
 
 export default function TitlePage() {
   const pathname = usePathname();
@@ -12,6 +12,7 @@ export default function TitlePage() {
   const dispatch = useDispatch();
   const title = useSelector((state) => state.title.title);
   const titles = useSelector((state) => state.titles.content);
+  const facts = useSelector((state) => state.title.facts);
 
   useEffect(() => {
     if (title && title.id !== id) {
@@ -26,7 +27,11 @@ export default function TitlePage() {
         dispatch(fetchTitle({ id }));
       }
     }
-  }, [dispatch, id, title, titles]);
+
+    if (!facts) {
+      dispatch(fetchFacts({ id }));
+    }
+  }, [dispatch, id, title, titles, facts]);
 
   if (!title) {
     return <CircularProgress />;
@@ -42,6 +47,7 @@ export default function TitlePage() {
       <p>End Year: {title.endYear}</p>
       <p>Runtime Minutes: {title.runtimeMinutes}</p>
       <p>Genres: {title.genres.join(', ')}</p>
+      <p>Facts: {facts}</p>
     </div>
   );
 }
