@@ -49,4 +49,4 @@ spec:
         - name: GENERATIVE_MODEL_NAME
           value: phi3
         - name: DATA_SERVICE_URL
-          value: data-service:8082/api/v1/data
+          value: http://data-service:8082/api/v1/data
