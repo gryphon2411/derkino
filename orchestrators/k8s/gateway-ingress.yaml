@@ -27,3 +27,10 @@ spec:
             name: data-service
             port:
               number: 8082
+      - pathType: Prefix
+        path: "/api/v1/generative"
+        backend:
+          service:
+            name: generative-service
+            port:
+              number: 8083
