@@ -47,7 +47,9 @@ export default function TitlePage() {
       <p>End Year: {title.endYear}</p>
       <p>Runtime Minutes: {title.runtimeMinutes}</p>
       <p>Genres: {title.genres.join(', ')}</p>
-      <p style={{ whiteSpace: 'pre-wrap' }}>Facts: {facts}</p>
+      <p style={{ whiteSpace: 'pre-wrap' }}>
+        Facts: {facts ? facts : <CircularProgress />}
+      </p>
     </div>
   );
 }
