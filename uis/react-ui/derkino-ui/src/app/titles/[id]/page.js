@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Container, Grid, Card, CardContent, Typography, Button } from '@mui/material';
 import { fetchTitle, setTitle, fetchFacts } from '@/app/titles/[id]/slice';
 
 export default function TitlePage() {
@@ -38,18 +38,49 @@ export default function TitlePage() {
   }
 
   return (
-    <div>
-      <h1>{title.primaryTitle}</h1>
-      <p>Type: {title.titleType}</p>
-      <p>Original Title: {title.originalTitle}</p>
-      <p>Is Adult: {title.isAdult ? 'Yes' : 'No'}</p>
-      <p>Start Year: {title.startYear}</p>
-      <p>End Year: {title.endYear}</p>
-      <p>Runtime Minutes: {title.runtimeMinutes}</p>
-      <p>Genres: {title.genres.join(', ')}</p>
-      <p style={{ whiteSpace: 'pre-wrap' }}>
-        Facts: {facts ? facts : <CircularProgress />}
-      </p>
-    </div>
+    <Container sx={{ padding: 2, margin: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Card sx={{ padding: 2, margin: 2 }}>
+            <CardContent>
+              <Typography variant="h2" gutterBottom>
+                {title.primaryTitle}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Type: {title.titleType}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Original Title: {title.originalTitle}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Is Adult: {title.isAdult? 'Yes' : 'No'}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Start Year: {title.startYear}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                End Year: {title.endYear}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Runtime Minutes: {title.runtimeMinutes}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Genres: {title.genres.join(', ')}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Facts:
+              </Typography>
+              {facts? (
+                <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }} gutterBottom>
+                  {facts}
+                </Typography>
+              ) : (
+                <CircularProgress />
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
