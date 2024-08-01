@@ -15,8 +15,9 @@ import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
 import MainFragment from '@/components/MainFragment';
 
 export const metadata = {
-  title: 'Next.js App Router + Material UI v5',
-  description: 'Next.js App Router + Material UI v5',
+  title: 'Derkino',
+  description: `Derkino ("The cinema"), derived from Yiddish (דער קינאָ), represents a personal 
+  educational initiative focused on exploring various technologies within the context of a cinema.`,
 };
 
 const DRAWER_WIDTH = 240;
@@ -44,7 +45,7 @@ export default function RootLayout({ children }) {
               <Toolbar sx={{ backgroundColor: 'background.paper' }}>
                 <DashboardIcon sx={{ color: '#444', mr: 2, transform: 'translateY(-2px)' }} />
                 <Typography variant="h6" noWrap component="div" color="black">
-                  Next.js App Router
+                  Derkino
                 </Typography>
               </Toolbar>
             </AppBar>
