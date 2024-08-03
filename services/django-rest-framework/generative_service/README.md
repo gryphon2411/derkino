@@ -10,7 +10,7 @@ $ mkdir generative_service
 
 # Open generative_service with PyCharm and python3.10 virtual environment
 
-(venv) $ pip install django djangorestframework requests huggingface_hub
+(venv) $ pip install uwsgi django djangorestframework requests huggingface_hub
 (venv) $ django-admin startproject generative_service .
 (venv) $ django-admin startapp generative_service_app
 ```
