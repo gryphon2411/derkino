@@ -83,13 +83,28 @@ def transform_csv_row_data(row):
         for cell_key, cell_value in row.items():
             if cell_value:
                 if "\\N" in cell_value:
-                    row[cell_key] = None
-                elif cell_key == "genres":
-                    row[cell_key] = cell_value.split(",") if "," in cell_value else [cell_value]
+                    cell_value = None
+
+                if cell_key == "genres":
+                    if cell_value:
+                        cell_value = cell_value.split(",") if "," in cell_value else [cell_value]
+                    else:
+                        cell_value = []
+
                 elif cell_key == "isAdult":
-                    row[cell_key] = True if cell_value == "1" else False
+                    if cell_value:
+                        cell_value = True if cell_value == "1" else False
+
                 elif cell_key in ["runtimeMinutes", "startYear", "endYear"]:
-                    row[cell_key] = int(cell_value) if cell_value.isdigit() else None
+                    if cell_value:
+                        cell_value = int(cell_value) if cell_value.isdigit() else None
+
+                row[cell_key] = cell_value
+
+        if row["endYear"] and not row["startYear"]:
+            row["startYear"] = row["endYear"]
+        elif row["startYear"] and not row["endYear"]:
+            row["endYear"] = row["startYear"]
     except Exception:
         logger.exception(f"Row transform failed: {row}")
         raise
