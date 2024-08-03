@@ -1,8 +1,6 @@
 package com.derkino.data_service.titles;
 
 public class TitleDto extends Title {
-    public String facts;
-
     public TitleDto(Title title) {
         this.id = title.id;
         this.titleConst = title.titleConst;
