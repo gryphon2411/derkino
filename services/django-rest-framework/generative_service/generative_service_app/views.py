@@ -40,7 +40,7 @@ class TitleFacts(APIView):
 
         title_name, title_year, title_type = self._get_title_name_and_year(response)
 
-        facts = self._generative_model.prompt_title_facts(title_name, title_year)
+        facts = self._generative_model.prompt_title_facts(title_name, title_year, title_type)
 
         return Response({"facts": facts})
 
