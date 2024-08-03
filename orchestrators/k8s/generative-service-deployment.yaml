@@ -47,6 +47,7 @@ spec:
               name: huggingface-hub-access-token
               key: token
         - name: GENERATIVE_MODEL_NAME
-          value: phi3
+          # Possible values: gemma, phi3, mixtral8x7b
+          value: mixtral8x7b
         - name: DATA_SERVICE_URL
           value: http://data-service:8082/api/v1/data
