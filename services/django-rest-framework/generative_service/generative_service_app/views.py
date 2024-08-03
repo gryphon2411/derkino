@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from generative_service_app.generative_models.gemma import get_gemma_generative_model
+from generative_service_app.generative_models.mixtral8x7b import get_mixtral8x7b_generative_model
 from generative_service_app.generative_models.phi3 import get_phi3_generative_model
 
 
@@ -24,6 +25,8 @@ class TitleFacts(APIView):
             _generative_model = get_gemma_generative_model()
         elif self.GENERATIVE_MODEL_NAME == "phi3":
             _generative_model = get_phi3_generative_model()
+        elif self.GENERATIVE_MODEL_NAME == "mixtral8x7b":
+            _generative_model = get_mixtral8x7b_generative_model()
 
         return _generative_model
 
@@ -35,7 +38,7 @@ class TitleFacts(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        title_name, title_year = self._get_title_name_and_year(response)
+        title_name, title_year, title_type = self._get_title_name_and_year(response)
 
         facts = self._generative_model.prompt_title_facts(title_name, title_year)
 
@@ -43,11 +46,13 @@ class TitleFacts(APIView):
 
     def _get_title_name_and_year(self, response):
         data = response.json()
-        title_name = data.get('primaryTitle')
+        title_name = data.get('originalTitle')
 
         start_year = data.get('startYear')
         end_year = data.get('endYear')
 
         title_year = end_year if end_year else start_year
 
-        return title_name, title_year
+        title_type = data.get('titleType')
+
+        return title_name, title_year, title_type
