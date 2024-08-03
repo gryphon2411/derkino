@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from generative_service_app.generative_models.gemma import get_gemma_generative_model
 from generative_service_app.generative_models.mixtral8x7b import get_mixtral8x7b_generative_model
 from generative_service_app.generative_models.phi3 import get_phi3_generative_model
 
@@ -21,9 +20,7 @@ class TitleFacts(APIView):
     def _get_generative_model(self):
         _generative_model = None
 
-        if self.GENERATIVE_MODEL_NAME == "gemma":
-            _generative_model = get_gemma_generative_model()
-        elif self.GENERATIVE_MODEL_NAME == "phi3":
+        if self.GENERATIVE_MODEL_NAME == "phi3":
             _generative_model = get_phi3_generative_model()
         elif self.GENERATIVE_MODEL_NAME == "mixtral8x7b":
             _generative_model = get_mixtral8x7b_generative_model()

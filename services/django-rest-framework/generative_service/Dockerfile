@@ -11,8 +11,8 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app/
 
-# Install PyTorch, torchvision, and torchaudio from PyTorch wheel files
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# (Obsolete) Install PyTorch, torchvision, and torchaudio from PyTorch wheel files
+# RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # Install C compiler and the Python development headers
 RUN apt-get update && apt-get install -y build-essential python-dev-is-python3
