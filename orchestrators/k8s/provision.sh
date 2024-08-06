@@ -231,6 +231,13 @@ if confirm "Kafka system"; then
     kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
 fi
 
+if confirm "RabbitMQ system"; then
+    # https://artifacthub.io/packages/helm/bitnami/rabbitmq
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+    helm_install_and_wait rabbitmq-system rabbitmq bitnami/rabbitmq 14.6.5 orchestrators/k8s/charts/rabbitmq/values.yaml
+    echo
+fi
+
 if confirm "Derkino auth service"; then
     if [ "$CLUSTER_ENVIRONMENT" = "dev" ]; then
         kubectl delete -f orchestrators/k8s/auth-service-deployment.yaml

@@ -1,0 +1,25 @@
+replicaCount: 3
+service:
+  type: LoadBalancer
+rabbitmq:
+  username: derkino-apps
+  password: cvCB59XUYHL9x49
+  queues:
+    - name: generative_service.get_title
+      vhost: /
+      durable: true
+      auto_delete: false
+  users:
+    - username: derkino-apps
+      password: cvCB59XUYHL9x49
+      tags: []
+  permissions:
+    - username: derkino-apps
+      vhost: /
+      configure: ".*"
+      write: ".*"
+      read: ".*"
+  storage:
+    enabled: true
+    storageClassName: "standard"
+    size: 5Gi
