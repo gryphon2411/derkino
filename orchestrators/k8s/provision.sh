@@ -235,7 +235,8 @@ if confirm "RabbitMQ system"; then
     # https://artifacthub.io/packages/helm/bitnami/rabbitmq
     helm repo add bitnami https://charts.bitnami.com/bitnami
     helm_install_and_wait rabbitmq-system rabbitmq bitnami/rabbitmq 14.6.5 orchestrators/k8s/charts/rabbitmq/values.yaml
-    echo
+    echo -e "\n$(yq e '.auth.username, .auth.password' orchestrators/k8s/charts/rabbitmq/values.yaml)"
+    minikube -n rabbitmq-system service list | grep --color -E "http-stats|"
 fi
 
 if confirm "Derkino auth service"; then
