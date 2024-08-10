@@ -51,3 +51,14 @@ spec:
           value: mixtral8x7b
         - name: DATA_SERVICE_URL
           value: http://data-service:8082/api/v1/data
+
+        - name: RABBITMQ_HOST_ADDRESS
+          value: rabbitmq.rabbitmq-system
+        - name: RABBITMQ_HOST_PORT
+          value: "5672"
+        - name: RABBITMQ_USERNAME
+          value: derkino-services
+        - name: RABBITMQ_PASSWORD
+          value: 2gGCIz8qgvuUzQfW
+        - name: RABBITMQ_VHOST
+          value: "/"

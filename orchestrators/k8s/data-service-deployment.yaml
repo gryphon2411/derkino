@@ -87,3 +87,14 @@ spec:
               key: password
         - name: REDIS_NAMESPACE
           value: derkino:data
+
+        - name: RABBITMQ_HOST_ADDRESS
+          value: rabbitmq.rabbitmq-system
+        - name: RABBITMQ_HOST_PORT
+          value: "5672"
+        - name: RABBITMQ_USERNAME
+          value: derkino-services
+        - name: RABBITMQ_PASSWORD
+          value: 2gGCIz8qgvuUzQfW
+        - name: RABBITMQ_VHOST
+          value: "/"
