@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TitleService {
@@ -25,13 +24,12 @@ public class TitleService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public TitleDto getTitle(String id) {
-        Title title = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public Optional<TitleDto> getTitle(String id) {
+        Optional<TitleDto> optional = repository.findById(id).map(TitleDto::new);
 
-        sendToKafka(title);
+        optional.ifPresent(this::sendToKafka);
 
-        return new TitleDto(title);
+        return optional;
     }
 
     public Page<TitleDto> getTitlesPage(Pageable pageable, String titleType, String primaryTitle, Boolean isAdult,
