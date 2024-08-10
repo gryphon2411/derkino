@@ -8,4 +8,8 @@ class GenerativeServiceAppConfig(AppConfig):
     name = 'generative_service_app'
     huggingface_hub_access_token = os.getenv("HUGGINGFACE_HUB_ACCESS_TOKEN")
     generative_model_name = os.getenv("GENERATIVE_MODEL_NAME")
-    data_service_url = os.getenv("DATA_SERVICE_URL")
+    rabbitmq_username = os.getenv("RABBITMQ_USERNAME")
+    rabbitmq_password = os.getenv("RABBITMQ_PASSWORD")
+    rabbitmq_host_address = os.getenv("RABBITMQ_HOST_ADDRESS")
+    rabbitmq_host_port = os.getenv("RABBITMQ_HOST_PORT")
+    rabbitmq_vhost = os.getenv("RABBITMQ_VHOST")
