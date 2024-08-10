@@ -40,15 +40,6 @@ extraSecrets:
             "read": ".*",
             "write": ".*"
           }
-        ],
-        "queues": [
-          {
-            "name": "generative_service.title",
-            "vhost": "/",
-            "durable": true,
-            "auto_delete": false,
-            "arguments": {}
-          }
         ]
       }
 loadDefinition:
