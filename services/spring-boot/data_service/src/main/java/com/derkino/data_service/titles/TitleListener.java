@@ -13,6 +13,8 @@ public class TitleListener {
         this.service = service;
     }
 
+    // Annotated methods may have a non void return type. When they do, the result of the
+    // method invocation is sent as a reply to the queue defined by the ReplyTo header of the incoming message.
     @RabbitListener(queues = "derkino.data_service.title.rpc.requests", errorHandler = "rabbitListenerErrorHandler")
     public TitleDto getTitle(TitleRequest request) {
         return service.getTitle(request.title_id())
