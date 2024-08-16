@@ -208,10 +208,12 @@ if confirm "Mongodb init"; then
 fi
 
 if confirm "Postgres system"; then
+    kubectl create namespace postgres-system
+    kubectl -n postgres-system create configmap postgres-initdb --from-file orchestrators/k8s/postgres-initdb.sh
     create_statefulset_and_wait orchestrators/k8s/postgres-system.yaml
-    kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.username}' | base64 --decode
-    kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.password}' | base64 --decode
-    minikube -n postgres-system  service postgres --url
+    echo $(kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.username}' | base64 --decode)
+    echo $(kubectl -n postgres-system get secret postgres-root-user-credentials -o jsonpath='{.data.password}' | base64 --decode)
+    minikube -n postgres-system service list
 fi
 
 if confirm "Redis-Stack system"; then
