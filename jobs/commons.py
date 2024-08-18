@@ -2,7 +2,9 @@ import gzip
 import shutil
 from pathlib import Path
 
+import pandas as pd
 import requests
+from pandas import DataFrame
 
 from log import get_logger
 
@@ -64,6 +66,25 @@ def transform_csv_row_data(row):
         logger.exception(f"Row transform failed: {row}")
         raise
 
+def preprocess_dataframe(df: DataFrame):
+    df['genres'] = df['genres'].apply(transform_genres_cell_data)
+    df['isAdult'] = df['isAdult'].apply(transform_is_adult_cell_data)
+    df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], errors='coerce')
+    df['startYear'] = pd.to_numeric(df['startYear'], errors='coerce')
+    df['endYear'] = pd.to_numeric(df['endYear'], errors='coerce')
+
+    # Fill missing startYear and endYear
+    df['startYear'].fillna(df['endYear'], inplace=True)
+    df['endYear'].fillna(df['startYear'], inplace=True)
+
+def transform_genres_cell_data(genres_cell_data):
+    if pd.isna(genres_cell_data):
+        return []
+
+    return genres_cell_data.split(',')
+
+def transform_is_adult_cell_data(is_adult_cell_data):
+    return is_adult_cell_data == 1
 
 def delete_data_dir(data_dir):
     logger.info(f"Deleting {data_dir.absolute()} directory...")

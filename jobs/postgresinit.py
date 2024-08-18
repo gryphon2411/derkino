@@ -1,16 +1,15 @@
-import csv
 import os
-import sys
 import time
 from pathlib import Path
 from uuid import uuid4
 
+import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-from commons import transform_csv_row_data, create_data_dir, download_archive, extract_csv_from_archive, delete_data_dir
+from commons import create_data_dir, download_archive, extract_csv_from_archive, \
+    delete_data_dir, preprocess_dataframe
 from log import get_logger
 
 logger = get_logger(Path(__file__).stem)
@@ -31,7 +30,7 @@ class TitleBasics(Base):
     genres = Column(ARRAY(String))
 
 
-def read_csv_data_and_insert_to_database(csv_file_path):
+def read_csv_data_and_insert_to_database(csv_file_path: Path):
     connection_uri = "postgresql://{username}:{password}@{host}:{port}/{database}".format(
         username=os.getenv('POSTGRES_USERNAME'),
         password=os.getenv('POSTGRES_PASSWORD'),
@@ -42,57 +41,39 @@ def read_csv_data_and_insert_to_database(csv_file_path):
     engine = create_engine(connection_uri)
     session_class = sessionmaker(bind=engine)
     session = session_class()
-    write_command_batch_limit_size = 100000
-    total_inserted_ids = 0
-    total_rows_read = 0
-    csv_data = []
-    csv_data_size = 0
-    csv_data_read_counter = 0
 
-    logger.info(f"Reading {csv_file_path.name} and inserting in bulk to 'title_basics' table at {connection_uri} ...")
-    with csv_file_path.open('r', newline='') as csv_file:
-        reader = csv.DictReader(csv_file, delimiter='\t')
+    logger.info(f"Reading {csv_file_path.name} into a dataframe...")
+    df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N')
 
-        for row in reader:
-            if csv_data_read_counter >= write_command_batch_limit_size:
-                total_inserted_ids += insert_csv_data_to_database(csv_data, session)
-                csv_data_read_counter = 0
+    logger.info(f"Transforming {csv_file_path.name} dataframe data...")
+    preprocess_dataframe(df)
 
-            transform_csv_row_data(row)
+    logger.info(f"Inserting {csv_file_path.name} in bulk to 'title_basics' table at {connection_uri} ...")
+    memory_data_size = df.memory_usage(deep=True).sum()
+    storage_data_size = csv_file_path.stat().st_size
+    df.to_sql('title_basics', engine, if_exists='append', index=False, method='multi', chunksize=100000)
 
-            csv_data.append(row)
-            csv_data_size += sys.getsizeof(row)
-            total_rows_read += 1
-            csv_data_read_counter += 1
-
-        total_inserted_ids += insert_csv_data_to_database(csv_data, session)
+    total_inserted_ids = len(df)
 
     session.commit()
     session.close()
 
-    logger.info(f"Read {total_rows_read:,} csv rows (data size {csv_data_size / 1000 / 1000 / 1000:.3f} gb).")
-    logger.info(f'Inserted {total_inserted_ids:,} rows.')
-
-
-def insert_csv_data_to_database(csv_data, session):
-    session.bulk_insert_mappings(TitleBasics, csv_data)
-    total_inserted_ids = len(csv_data)
-    csv_data.clear()
-
-    return total_inserted_ids
+    logger.info(f'Inserted {total_inserted_ids:,} rows ('
+                f'memory: {memory_data_size / 1000 / 1000 / 1000:.3f} gb, '
+                f'storage: {storage_data_size / 1000 / 1000 / 1000:.3f} gb).')
 
 
 def main():
     execution_start, process_start = time.perf_counter(), time.process_time()
 
-    data_dir_ = create_data_dir()
-    archive_file_path_ = data_dir_ / 'title.basics.tsv.gz'
-    csv_file_path_ = data_dir_ / 'data.csv'
+    data_dir = create_data_dir()
+    archive_file_path = data_dir / 'title.basics.tsv.gz'
+    csv_file_path = data_dir / 'data.csv'
 
-    download_archive(archive_file_path_)
-    extract_csv_from_archive(archive_file_path_, csv_file_path_)
-    read_csv_data_and_insert_to_database(csv_file_path_)
-    delete_data_dir(data_dir_)
+    download_archive(archive_file_path)
+    extract_csv_from_archive(archive_file_path, csv_file_path)
+    read_csv_data_and_insert_to_database(csv_file_path)
+    delete_data_dir(data_dir)
 
     execution_end, process_end = time.perf_counter(), time.process_time()
     execution_duration = execution_end - execution_start
