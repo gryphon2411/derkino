@@ -1,16 +1,18 @@
 import os
 import time
+import uuid
 from pathlib import Path
-from uuid import uuid4
 
 import pandas as pd
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY, text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base
 
 from commons import create_data_dir, download_archive, extract_csv_from_archive, \
     delete_data_dir, preprocess_dataframe
 from log import get_logger
+
+CONNECTION_URI_TEMPLATE = "postgresql+psycopg2://{username}:{password}@{host}/{database}"
 
 logger = get_logger(Path(__file__).stem)
 Base = declarative_base()
@@ -18,49 +20,53 @@ Base = declarative_base()
 
 class TitleBasics(Base):
     __tablename__ = 'title_basics'
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tconst = Column(String)
     titleType = Column(String)
     primaryTitle = Column(String)
     originalTitle = Column(String)
-    isAdult = Column(Boolean)
-    startYear = Column(Integer)
-    endYear = Column(Integer)
-    runtimeMinutes = Column(Integer)
+    isAdult = Column(Boolean, nullable=True)
+    startYear = Column(Integer, nullable=True)
+    endYear = Column(Integer, nullable=True)
+    runtimeMinutes = Column(Integer, nullable=True)
     genres = Column(ARRAY(String))
 
 
 def read_csv_data_and_insert_to_database(csv_file_path: Path):
-    connection_uri = "postgresql://{username}:{password}@{host}:{port}/{database}".format(
-        username=os.getenv('POSTGRES_USERNAME'),
-        password=os.getenv('POSTGRES_PASSWORD'),
-        host=os.getenv('POSTGRES_HOST'),  # 'postgres.postgres-system',
-        port=os.getenv('POSTGRES_PORT'),  # 5432,
-        database=os.getenv('POSTGRES_DB')
-    )
+    connection_uri = CONNECTION_URI_TEMPLATE.format(username=os.getenv('POSTGRES_USERNAME'),
+                                                    password=os.getenv('POSTGRES_PASSWORD'),
+                                                    host=os.getenv('POSTGRES_HOST'),
+                                                    database=os.getenv('POSTGRES_DB'))
+
     engine = create_engine(connection_uri)
-    session_class = sessionmaker(bind=engine)
-    session = session_class()
+    Base.metadata.create_all(engine)  # Creates the table in the database
 
-    logger.info(f"Reading {csv_file_path.name} into a dataframe...")
-    df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N')
+    preprocessed_csv_file_path = csv_file_path.with_name(csv_file_path.stem + '_preprocessed_test.csv')
 
-    logger.info(f"Transforming {csv_file_path.name} dataframe data...")
+    logger.info(f"Reading and preprocessing {csv_file_path.name} ...")
+    df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N', dtype=str)
     preprocess_dataframe(df)
+    df.to_csv(preprocessed_csv_file_path, index=False)
 
-    logger.info(f"Inserting {csv_file_path.name} in bulk to 'title_basics' table at {connection_uri} ...")
-    memory_data_size = df.memory_usage(deep=True).sum()
-    storage_data_size = csv_file_path.stat().st_size
-    df.to_sql('title_basics', engine, if_exists='append', index=False, method='multi', chunksize=100000)
+    logger.info(f"Copying {preprocessed_csv_file_path.name} into '{TitleBasics.__tablename__}' table at {engine.url} ...")
+    connection = engine.raw_connection()
+    try:
+        with connection.cursor() as cursor:
+            with preprocessed_csv_file_path.open("r") as csv_file:
+                cursor.copy_expert(f"COPY {TitleBasics.__tablename__} FROM STDIN WITH CSV HEADER", csv_file)
 
-    total_inserted_ids = len(df)
+        connection.commit()
+    finally:
+        connection.close()
 
-    session.commit()
-    session.close()
+    storage_data_size = preprocessed_csv_file_path.stat().st_size
+    total_copied_rows = 0
 
-    logger.info(f'Inserted {total_inserted_ids:,} rows ('
-                f'memory: {memory_data_size / 1000 / 1000 / 1000:.3f} gb, '
-                f'storage: {storage_data_size / 1000 / 1000 / 1000:.3f} gb).')
+    with engine.connect() as connection:
+        result = connection.execute(text(f"SELECT COUNT(*) FROM {TitleBasics.__tablename__}"))
+        total_copied_rows = result.scalar()
+
+    logger.info(f'Copied {total_copied_rows:,} rows ({storage_data_size / 1000 / 1000 / 1000:.3f} gb).')
 
 
 def main():

@@ -1,10 +1,12 @@
 import gzip
 import shutil
+import uuid
 from pathlib import Path
 
 import pandas as pd
 import requests
 from pandas import DataFrame
+from typing_extensions import Optional
 
 from log import get_logger
 
@@ -68,34 +70,47 @@ def transform_csv_row_data(row):
 
 def preprocess_dataframe(df: DataFrame):
     df['genres'] = df['genres'].apply(transform_genres_cell_data)
-    df['isAdult'] = df['isAdult'].apply(transform_is_adult_cell_data)
+    df['isAdult'] = df['isAdult'].apply(transform_is_adult_cell_data).astype('boolean')
     df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], errors='coerce')
     df['startYear'] = pd.to_numeric(df['startYear'], errors='coerce')
     df['endYear'] = pd.to_numeric(df['endYear'], errors='coerce')
 
-    # Fill missing startYear and endYear
-    df['startYear'].fillna(df['endYear'], inplace=True)
-    df['endYear'].fillna(df['startYear'], inplace=True)
+    # Fills missing startYear and endYear
+    df['startYear'] = df['startYear'].fillna(df['endYear'])
+    df['endYear'] = df['endYear'].fillna(df['startYear'])
+
+    df['runtimeMinutes'] = df['runtimeMinutes'].astype('Int64')
+    df['startYear'] = df['startYear'].astype('Int64')
+    df['endYear'] = df['endYear'].astype('Int64')
+
+    # Adds UUIDs
+    df['id'] = [str(uuid.uuid4()) for row_index in range(len(df))]
+
+    # Moves 'id' column to be first
+    id_column = df.pop('id')
+    df.insert(0, 'id', id_column)
 
 def transform_genres_cell_data(genres_cell_data):
     if pd.isna(genres_cell_data):
-        return []
+        return "{}"  # Postgres array format
 
-    return genres_cell_data.split(',')
+    return "{" + genres_cell_data + "}"  # Postgres array format
 
-def transform_is_adult_cell_data(is_adult_cell_data):
-    return is_adult_cell_data == 1
+def transform_is_adult_cell_data(is_adult_cell_data: Optional[str]):
+    if is_adult_cell_data is not None:
+        return True if is_adult_cell_data == "1" else False
+
 
 def delete_data_dir(data_dir):
-    logger.info(f"Deleting {data_dir.absolute()} directory...")
     shutil.rmtree(data_dir)
 
-    logger.info(f"Deleted.")
+    logger.info(f"Deleted {data_dir.absolute()} directory.")
 
 
 def create_data_dir():
     data_dir = Path("data")
-    logger.info(f"Creating {data_dir.absolute()} directory...")
     data_dir.mkdir(exist_ok=True)
+
+    logger.info(f"Created {data_dir.absolute()} directory.")
 
     return data_dir
