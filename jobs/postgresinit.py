@@ -2,9 +2,10 @@ import os
 import time
 import uuid
 from pathlib import Path
+from typing import Type
 
 import pandas as pd
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY, text
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY, text, Engine
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -48,12 +49,16 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     preprocess_dataframe(df)
     df.to_csv(preprocessed_csv_file_path, index=False)
 
-    logger.info(f"Copying {preprocessed_csv_file_path.name} into '{TitleBasics.__tablename__}' table at {engine.url} ...")
+    insert_to_database(engine, preprocessed_csv_file_path, TitleBasics)
+
+
+def insert_to_database(engine: Engine, preprocessed_csv_file_path: Path, table: Type[Base]):
+    logger.info(f"Copying {preprocessed_csv_file_path.name} into '{table.__tablename__}' table at {engine.url} ...")
     connection = engine.raw_connection()
     try:
         with connection.cursor() as cursor:
             with preprocessed_csv_file_path.open("r") as csv_file:
-                cursor.copy_expert(f"COPY {TitleBasics.__tablename__} FROM STDIN WITH CSV HEADER", csv_file)
+                cursor.copy_expert(f"COPY {table.__tablename__} FROM STDIN WITH CSV HEADER", csv_file)
 
         connection.commit()
     finally:
@@ -63,7 +68,7 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     total_copied_rows = 0
 
     with engine.connect() as connection:
-        result = connection.execute(text(f"SELECT COUNT(*) FROM {TitleBasics.__tablename__}"))
+        result = connection.execute(text(f"SELECT COUNT(*) FROM {table.__tablename__}"))
         total_copied_rows = result.scalar()
 
     logger.info(f'Copied {total_copied_rows:,} rows ({storage_data_size / 1000 / 1000 / 1000:.3f} gb).')
