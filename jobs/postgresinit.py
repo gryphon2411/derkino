@@ -42,17 +42,22 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     engine = create_engine(connection_uri)
     Base.metadata.create_all(engine)  # Creates the table in the database
 
-    preprocessed_csv_file_path = csv_file_path.with_name(csv_file_path.stem + '_preprocessed_test.csv')
+    preprocessed_csv_file_path = preprocess_title_basics_csv(csv_file_path)
+    insert_csv_to_database(engine, preprocessed_csv_file_path, TitleBasics)
 
+
+def preprocess_title_basics_csv(csv_file_path):
     logger.info(f"Reading and preprocessing {csv_file_path.name} ...")
+
+    preprocessed_csv_file_path = csv_file_path.with_name(csv_file_path.stem + '_preprocessed.csv')
     df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N', dtype=str)
     preprocess_dataframe(df)
     df.to_csv(preprocessed_csv_file_path, index=False)
 
-    insert_to_database(engine, preprocessed_csv_file_path, TitleBasics)
+    return preprocessed_csv_file_path
 
 
-def insert_to_database(engine: Engine, preprocessed_csv_file_path: Path, table: Type[Base]):
+def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, table: Type[Base]):
     logger.info(f"Copying {preprocessed_csv_file_path.name} into '{table.__tablename__}' table at {engine.url} ...")
     connection = engine.raw_connection()
     try:
