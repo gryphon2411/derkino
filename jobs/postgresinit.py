@@ -19,8 +19,8 @@ logger = get_logger(Path(__file__).stem)
 Base = declarative_base()
 
 
-class TitleBasic(Base):
-    __tablename__ = 'title_basic'
+class Title(Base):
+    __tablename__ = 'title'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tconst = Column(String)
     titleType = Column(String)
@@ -43,7 +43,7 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     Base.metadata.create_all(engine)  # Creates the table in the database
 
     preprocessed_csv_file_path = preprocess_title_basic_csv(csv_file_path)
-    insert_csv_to_database(engine, preprocessed_csv_file_path, TitleBasic)
+    insert_csv_to_database(engine, preprocessed_csv_file_path, Title)
 
 
 def preprocess_title_basic_csv(csv_file_path):
