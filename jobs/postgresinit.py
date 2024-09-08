@@ -2,7 +2,7 @@ import os
 import time
 import uuid
 from pathlib import Path
-from typing import Type
+from typing import Type, Optional
 
 import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, text, Engine
@@ -16,6 +16,7 @@ from log import get_logger
 CONNECTION_URI_TEMPLATE = "postgresql+psycopg2://{username}:{password}@{host}/{database}"
 
 logger = get_logger(Path(__file__).stem)
+data_dir = None  # type: Optional[Path]
 Base = declarative_base()
 
 
@@ -77,8 +78,8 @@ def preprocess_title_basic_csv(csv_file_path):
 
 
 def create_title_csv(preprocessed_csv_file_path: Path):
+    title_csv_path = data_dir / "title.csv"
     df = pd.read_csv(preprocessed_csv_file_path)
-    title_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_title.csv')
 
     logger.info(f"Reading {preprocessed_csv_file_path.name} and creating {title_csv_path.name} ...")
 
@@ -93,8 +94,8 @@ def create_title_csv(preprocessed_csv_file_path: Path):
 
 
 def create_genre_csv(preprocessed_csv_file_path: Path):
+    genre_csv_path = data_dir / "genre.csv"
     df = pd.read_csv(preprocessed_csv_file_path)
-    genre_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_genre.csv')
 
     logger.info(f"Reading {preprocessed_csv_file_path.name} and creating {genre_csv_path.name} ...")
 
@@ -110,9 +111,9 @@ def create_genre_csv(preprocessed_csv_file_path: Path):
     return genre_csv_path
 
 def create_title_genre_csv(preprocessed_csv_file_path, genre_csv_path):
+    title_genre_csv_path = data_dir / "title_genre.csv"
     df = pd.read_csv(preprocessed_csv_file_path)
     genre_df = pd.read_csv(genre_csv_path)
-    title_genre_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_title_genre.csv')
 
     logger.info(f"Reading {preprocessed_csv_file_path.name}, {genre_csv_path} "
                 f"and creating {title_genre_csv_path.name} ...")
@@ -155,6 +156,7 @@ def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, tab
 
 
 def main():
+    global data_dir
     execution_start, process_start = time.perf_counter(), time.process_time()
 
     data_dir = create_data_dir()
