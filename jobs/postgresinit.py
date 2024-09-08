@@ -54,7 +54,15 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     Base.metadata.create_all(engine)  # Creates the table in the database
 
     preprocessed_csv_file_path = preprocess_title_basic_csv(csv_file_path)
-    insert_csv_to_database(engine, preprocessed_csv_file_path, Title)
+
+    title_csv_path = create_title_csv(preprocessed_csv_file_path)
+    insert_csv_to_database(engine, title_csv_path, Title)
+
+    genre_csv_path = create_genre_csv(preprocessed_csv_file_path)
+    insert_csv_to_database(engine, genre_csv_path, Genre)
+
+    title_genre_csv_path = create_title_genre_csv(preprocessed_csv_file_path, genre_csv_path)
+    insert_csv_to_database(engine, title_genre_csv_path, TitleGenre)
 
 
 def preprocess_title_basic_csv(csv_file_path):
@@ -66,6 +74,62 @@ def preprocess_title_basic_csv(csv_file_path):
     df.to_csv(preprocessed_csv_file_path, index=False)
 
     return preprocessed_csv_file_path
+
+
+def create_title_csv(preprocessed_csv_file_path: Path):
+    df = pd.read_csv(preprocessed_csv_file_path)
+    title_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_title.csv')
+
+    logger.info(f"Reading {preprocessed_csv_file_path.name} and creating {title_csv_path.name} ...")
+
+    title_df = df.drop(columns=['genres'])
+
+    id_column = title_df.pop('id')
+    title_df.insert(0, 'id', id_column)
+
+    title_df.to_csv(title_csv_path, index=False)
+
+    return title_csv_path
+
+
+def create_genre_csv(preprocessed_csv_file_path: Path):
+    df = pd.read_csv(preprocessed_csv_file_path)
+    genre_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_genre.csv')
+
+    logger.info(f"Reading {preprocessed_csv_file_path.name} and creating {genre_csv_path.name} ...")
+
+    genre_df = df['genres'].dropna().str.split(',').explode().drop_duplicates().reset_index(drop=True)
+    genre_df = genre_df.rename(columns={'genres': 'name'})
+
+    genre_df['id'] = [str(uuid.uuid4()) for row_index in range(len(genre_df))]
+    id_column = genre_df.pop('id')
+    genre_df.insert(0, 'id', id_column)
+
+    genre_df.to_csv(genre_csv_path, index=False)
+
+    return genre_csv_path
+
+def create_title_genre_csv(preprocessed_csv_file_path, genre_csv_path):
+    df = pd.read_csv(preprocessed_csv_file_path)
+    genre_df = pd.read_csv(genre_csv_path)
+    title_genre_csv_path = preprocessed_csv_file_path.with_name(preprocessed_csv_file_path.stem + '_title_genre.csv')
+
+    logger.info(f"Reading {preprocessed_csv_file_path.name}, {genre_csv_path} "
+                f"and creating {title_genre_csv_path.name} ...")
+
+    title_genre_df = df[['id', 'genres']].dropna().explode('genres')
+    title_genre_df = title_genre_df.rename(columns={'id': 'title_id', 'genres': 'genre_id'})
+    title_genre_df['genre_id'] = title_genre_df['genre_id'].map(dict(zip(genre_df['name'], genre_df['id'])))
+
+    title_id_column = title_genre_df.pop('title_id')
+    title_genre_df.insert(0, 'title_id', title_id_column)
+
+    genre_id_column = title_genre_df.pop('genre_id')
+    title_genre_df.insert(1, 'genre_id', genre_id_column)
+
+    title_genre_df.to_csv(title_genre_csv_path, index=False)
+
+    return title_genre_csv_path
 
 
 def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, table: Type[Base]):
