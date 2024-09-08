@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Type
 
 import pandas as pd
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY, text, Engine
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, text, Engine
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 from commons import create_data_dir, download_archive, extract_csv_from_archive, \
     delete_data_dir, preprocess_dataframe
@@ -30,7 +30,18 @@ class Title(Base):
     startYear = Column(Integer, nullable=True)
     endYear = Column(Integer, nullable=True)
     runtimeMinutes = Column(Integer, nullable=True)
-    genres = Column(ARRAY(String))
+    genres = relationship("Genre", secondary="title_genre", back_populates="titles")
+
+class Genre(Base):
+    __tablename__ = 'genre'
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, unique=True)
+    titles = relationship("Title", secondary="title_genre", back_populates="genres")
+
+class TitleGenre(Base):
+    __tablename__ = 'title_genre'
+    title_id = Column(UUID(as_uuid=True), ForeignKey('title.id'), primary_key=True)
+    genre_id = Column(UUID(as_uuid=True), ForeignKey('genre.id'), primary_key=True)
 
 
 def read_csv_data_and_insert_to_database(csv_file_path: Path):
