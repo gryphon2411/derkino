@@ -69,7 +69,6 @@ def transform_csv_row_data(row):
         raise
 
 def preprocess_dataframe(df: DataFrame):
-    df['genres'] = df['genres'].apply(transform_genres_cell_data)
     df['isAdult'] = df['isAdult'].apply(transform_is_adult_cell_data).astype('boolean')
     df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], errors='coerce')
     df['startYear'] = pd.to_numeric(df['startYear'], errors='coerce')
@@ -90,11 +89,6 @@ def preprocess_dataframe(df: DataFrame):
     id_column = df.pop('id')
     df.insert(0, 'id', id_column)
 
-def transform_genres_cell_data(genres_cell_data):
-    if pd.isna(genres_cell_data):
-        return "{}"  # Postgres array format
-
-    return "{" + genres_cell_data + "}"  # Postgres array format
 
 def transform_is_adult_cell_data(is_adult_cell_data: Optional[str]):
     if is_adult_cell_data is not None:
