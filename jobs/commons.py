@@ -78,9 +78,10 @@ def preprocess_dataframe(df: DataFrame):
     df['startYear'] = df['startYear'].fillna(df['endYear'])
     df['endYear'] = df['endYear'].fillna(df['startYear'])
 
-    df['runtimeMinutes'] = df['runtimeMinutes'].astype('Int16')
-    df['startYear'] = df['startYear'].astype('Int16')
-    df['endYear'] = df['endYear'].astype('Int16')
+    # Use string instead of Int64 to improve memory consumption
+    df['runtimeMinutes'] = df['runtimeMinutes'].astype('string')
+    df['startYear'] = df['startYear'].astype('string')
+    df['endYear'] = df['endYear'].astype('string')
 
     # Adds UUIDs
     df['id'] = [str(uuid.uuid4()) for row_index in range(len(df))]
