@@ -54,9 +54,7 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     engine = create_engine(connection_uri)
     Base.metadata.create_all(engine)  # Creates the table in the database
 
-    preprocessed_csv_file_path = preprocess_title_basic_csv(csv_file_path)
-
-    preprocessed_df = pd.read_csv(preprocessed_csv_file_path)
+    preprocessed_df = preprocess_title_basic_csv(csv_file_path)
 
     title_csv_path = create_title_csv(preprocessed_df)
     insert_csv_to_database(engine, title_csv_path, Title)
@@ -71,12 +69,10 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
 def preprocess_title_basic_csv(csv_file_path):
     logger.info(f"Reading and preprocessing {csv_file_path.name} ...")
 
-    preprocessed_csv_file_path = csv_file_path.with_name(csv_file_path.stem + '_preprocessed.csv')
     df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N', dtype=str)
     preprocess_dataframe(df)
-    df.to_csv(preprocessed_csv_file_path, index=False)
 
-    return preprocessed_csv_file_path
+    return df
 
 
 def create_title_csv(df: pd.DataFrame):
