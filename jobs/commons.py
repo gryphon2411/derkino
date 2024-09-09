@@ -70,9 +70,9 @@ def transform_csv_row_data(row):
 
 def preprocess_dataframe(df: DataFrame):
     df['isAdult'] = df['isAdult'].apply(transform_is_adult_cell_data).astype('boolean')
-    df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], downcast='integer', errors='coerce')
-    df['startYear'] = pd.to_numeric(df['startYear'], downcast='integer', errors='coerce')
-    df['endYear'] = pd.to_numeric(df['endYear'], downcast='integer', errors='coerce')
+    df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], errors='coerce')
+    df['startYear'] = pd.to_numeric(df['startYear'], errors='coerce')
+    df['endYear'] = pd.to_numeric(df['endYear'], errors='coerce')
 
     # Fills missing startYear and endYear
     df['startYear'] = df['startYear'].fillna(df['endYear'])
