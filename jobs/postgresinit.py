@@ -2,7 +2,7 @@ import os
 import time
 import uuid
 from pathlib import Path
-from typing import Type
+from typing import Type, Optional
 
 import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, ARRAY, text, Engine
@@ -16,6 +16,7 @@ from log import get_logger
 CONNECTION_URI_TEMPLATE = "postgresql+psycopg2://{username}:{password}@{host}/{database}"
 
 logger = get_logger(Path(__file__).stem)
+data_dir = None  # type: Optional[Path]
 Base = declarative_base()
 
 
@@ -46,10 +47,10 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
     insert_csv_to_database(engine, preprocessed_csv_file_path, Title)
 
 
-def preprocess_title_basic_csv(csv_file_path):
+def preprocess_title_basic_csv(csv_file_path: Path):
     logger.info(f"Reading and preprocessing {csv_file_path.name} ...")
 
-    preprocessed_csv_file_path = csv_file_path.with_name(csv_file_path.stem + '_preprocessed.csv')
+    preprocessed_csv_file_path = data_dir / (csv_file_path.stem + '_preprocessed.csv')
     df = pd.read_csv(csv_file_path, delimiter='\t', na_values='\\N', dtype=str)
     preprocess_dataframe(df)
     df.to_csv(preprocessed_csv_file_path, index=False)
@@ -80,6 +81,7 @@ def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, tab
 
 
 def main():
+    global data_dir
     execution_start, process_start = time.perf_counter(), time.process_time()
 
     data_dir = create_data_dir()
