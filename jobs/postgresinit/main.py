@@ -1,53 +1,28 @@
 import os
 import time
-import uuid
 from pathlib import Path
 from typing import Type, Optional
 
 import pandas as pd
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, text, Engine, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import create_engine, text, Engine
+from sqlalchemy.orm import sessionmaker
 
-from commons import create_data_dir, download_archive, extract_csv_from_archive, \
-    delete_data_dir, preprocess_dataframe
+from commons import create_data_dir, preprocess_dataframe, download_archive, extract_csv_from_archive, delete_data_dir
 from log import get_logger
+from postgresinit.data_integrity_reports import run_data_integrity_reports
+from postgresinit.postgres_commons import Base
+from postgresinit.schemas import Title, Genre, TitleGenre
 
 CONNECTION_URI_TEMPLATE = "postgresql+psycopg2://{username}:{password}@{host}/{database}"
 
 logger = get_logger(Path(__file__).stem)
 data_dir = None  # type: Optional[Path]
-Base = declarative_base()
-
-
-class Title(Base):
-    __tablename__ = 'title'
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    tconst = Column(String)
-    titleType = Column(String)
-    primaryTitle = Column(String)
-    originalTitle = Column(String)
-    isAdult = Column(Boolean, nullable=True)
-    startYear = Column(Integer, nullable=True)
-    endYear = Column(Integer, nullable=True)
-    runtimeMinutes = Column(Integer, nullable=True)
-    genres = relationship("Genre", secondary="title_genre", back_populates="titles")
-
-
-class Genre(Base):
-    __tablename__ = 'genre'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    genre_name = Column(String, unique=True, nullable=False)
-    titles = relationship("Title", secondary="title_genre", back_populates="genres")
-
-
-class TitleGenre(Base):
-    __tablename__ = 'title_genre'
-    title_id = Column(UUID(as_uuid=True), ForeignKey('title.id'), primary_key=True)
-    genre_id = Column(Integer, ForeignKey('genre.id'), primary_key=True)
+engine = None  # type: Optional[Engine]
 
 
 def read_csv_data_and_insert_to_database(csv_file_path: Path):
+    global engine
+
     connection_uri = CONNECTION_URI_TEMPLATE.format(username=os.getenv('POSTGRES_USERNAME'),
                                                     password=os.getenv('POSTGRES_PASSWORD'),
                                                     host=os.getenv('POSTGRES_HOST'),
@@ -58,10 +33,10 @@ def read_csv_data_and_insert_to_database(csv_file_path: Path):
 
     preprocessed_df = preprocess_title_basic_csv(csv_file_path)
 
-    process_title_data(engine, preprocessed_df)
+    process_title_data(preprocessed_df)
 
-    genre_df = process_genre_data(engine, preprocessed_df)
-    process_title_genre_data(engine, preprocessed_df, genre_df)
+    genre_df = process_genre_data(preprocessed_df)
+    process_title_genre_data(preprocessed_df, genre_df)
 
 
 def preprocess_title_basic_csv(csv_file_path: Path):
@@ -73,7 +48,7 @@ def preprocess_title_basic_csv(csv_file_path: Path):
     return df
 
 
-def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, table: Type[Base]):
+def insert_csv_to_database(preprocessed_csv_file_path: Path, table: Type[Base]):
     logger.info(f"Copying {preprocessed_csv_file_path.name} into '{table.__tablename__}' table at {engine.url} ...")
     connection = engine.raw_connection()
     try:
@@ -95,49 +70,50 @@ def insert_csv_to_database(engine: Engine, preprocessed_csv_file_path: Path, tab
     logger.info(f'Copied {total_copied_rows:,} rows ({storage_data_size / 1000 / 1000 / 1000:.3f} gb).')
 
 
-def process_title_data(engine: Engine, preprocessed_df: pd.DataFrame):
+def process_title_data(preprocessed_df: pd.DataFrame):
     title_csv_path = data_dir / 'title.csv'
     logger.info(f"Processing {title_csv_path.name} ...")
 
     title_df = generate_title_dataframe(preprocessed_df)
     title_df.to_csv(title_csv_path, index=False)
 
-    insert_csv_to_database(engine, title_csv_path, Title)
+    insert_csv_to_database(title_csv_path, Title)
 
 
 def generate_title_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop('genres', axis=1)
 
 
-def process_genre_data(engine: Engine, preprocessed_df: pd.DataFrame):
+def process_genre_data(preprocessed_df: pd.DataFrame):
     genre_csv_path = data_dir / 'genre.csv'
     logger.info(f"Processing {genre_csv_path.name} ...")
 
     genre_df = generate_genre_dataframe(preprocessed_df)
     genre_df.to_csv(genre_csv_path, index=False)
 
-    insert_csv_to_database(engine, genre_csv_path, Genre)
+    insert_csv_to_database(genre_csv_path, Genre)
 
     return genre_df
 
 
-def process_title_genre_data(engine: Engine, preprocessed_df: pd.DataFrame, genre_df: pd.DataFrame):
+def process_title_genre_data(preprocessed_df: pd.DataFrame, genre_df: pd.DataFrame):
     title_genre_csv_path = data_dir / 'title_genre.csv'
     logger.info(f"Processing {title_genre_csv_path.name} ...")
 
     title_genre_df = generate_title_genre_dataframe(preprocessed_df, genre_df)
     title_genre_df.to_csv(title_genre_csv_path, index=False)
 
-    insert_csv_to_database(engine, title_genre_csv_path, TitleGenre)
+    insert_csv_to_database(title_genre_csv_path, TitleGenre)
 
 
 def generate_genre_dataframe(preprocessed_df: pd.DataFrame) -> pd.DataFrame:
     all_genres = set()
 
-    for index, row in preprocessed_df.iterrows():
-        genres = row['genres'].split(',') if isinstance(row['genres'], str) else []
-        for genre in genres:
-            all_genres.add(genre.strip())
+    for row in preprocessed_df['genres'].values:
+        if isinstance(row, str):
+            for genre in row.split(','):
+                all_genres.add(genre.strip())
+
     genre_df = pd.DataFrame({'genre_name': list(all_genres)})
     genre_df.index.name = 'id'
 
@@ -158,6 +134,14 @@ def generate_title_genre_dataframe(preprocessed_df: pd.DataFrame, genre_df: pd.D
     return pd.DataFrame(title_genre_data)
 
 
+def report_data_integrity():
+    session_class = sessionmaker(bind=engine)
+
+    # Use a context manager for the session
+    with session_class() as session:
+        run_data_integrity_reports(session)
+
+
 def main():
     global data_dir
     execution_start, process_start = time.perf_counter(), time.process_time()
@@ -170,6 +154,7 @@ def main():
     extract_csv_from_archive(archive_file_path, csv_file_path)
     read_csv_data_and_insert_to_database(csv_file_path)
     delete_data_dir(data_dir)
+    report_data_integrity()
 
     execution_end, process_end = time.perf_counter(), time.process_time()
     execution_duration = execution_end - execution_start

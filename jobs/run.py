@@ -5,7 +5,7 @@ import subprocess
 def main():
     parser = argparse.ArgumentParser(description='Run a job.')
     parser.add_argument('job', help='Name of the job to run',
-                        choices=["mongoinit.py", "postgresinit.py"])
+                        choices=["mongoinit.py", "postgresinit/main.py"])
 
     args = parser.parse_args()
 
