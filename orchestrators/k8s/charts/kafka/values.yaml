@@ -9,3 +9,6 @@ sasl:
   client:
     users: ["root"]
     passwords: ["w43Pw4Q9cb"]
+
+extraConfig: |
+  auto.create.topics.enable=true
