@@ -34,7 +34,7 @@ class Gemini2FlashGenerativeModel:
 
         contents = [input_text]
 
-        self._logger.warning(f"Generating '{self._model_name}' outputs for title facts prompt...")
+        self._logger.warning(f"Generating '{self._model_name}' outputs for title facts prompt")
 
         model_response = self._client.models.generate_content(model=self._model_name, contents=contents)
 
