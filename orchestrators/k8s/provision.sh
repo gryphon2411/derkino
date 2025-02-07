@@ -287,6 +287,7 @@ fi
 
 if confirm "Derkino generative service"; then
     create_secret_and_wait orchestrators/k8s/generative-service/huggingface-secret.yaml
+    create_secret_and_wait orchestrators/k8s/generative-service/gemini-secret.yaml
     create_deploy_and_wait orchestrators/k8s/generative-service/deployment.yaml
 fi
 
