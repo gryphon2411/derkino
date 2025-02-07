@@ -31,13 +31,16 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Copy app files from the builder stage
+# Install libxml2
+RUN apt-get update && apt-get install -y --no-install-recommends libxml2 libxml2-dev
+
+# Copy app files from builder stage
 COPY --from=builder /app /app
 
-# Copy the uwsgi executable and any other necessary binaries
+# Copy the uwsgi executable from builder stage
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
 
-# Copy installed Python packages from the builder stage
+# Copy installed Python packages from builder stage
 COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 
 # Expose the port uWSGI will listen on
