@@ -1,2 +1,13 @@
-.idea
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
 venv
+.env
+*.md
+tests/
+docs/
+.idea
+*.sqlite3
+static/
