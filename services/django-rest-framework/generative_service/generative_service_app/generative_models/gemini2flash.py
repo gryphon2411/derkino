@@ -1,9 +1,9 @@
-from logging import getLogger
+import logging
 from typing import Optional
 
+import requests
 from django.apps import apps
-from google import genai
-from google.genai import types
+
 
 gemini2flash_generative_model = None  # type: Optional[Gemini2FlashGenerativeModel]
 
@@ -19,26 +19,41 @@ def get_gemini2flash_generative_model():
 
 class Gemini2FlashGenerativeModel:
     MODEL_NAME = "gemini-2.0-flash"
-    GEMINI_API_KEY = apps.get_app_config("generative_service_app").gemini_api_key
+    API_KEY = apps.get_app_config("generative_service_app").gemini_api_key
+    API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
+    API_URL = f"{API_BASE_URL}/{MODEL_NAME}:generateContent?key={API_KEY}"
+    API_HEADERS = {"Content-Type": "application/json"}
     TITLE_FACTS_SYSTEM_INSTRUCTION = ("When providing lists of facts or information, present the facts directly "
                                       "without introductory or concluding sentences.")
     TITLE_FACTS_PROMPT_TEMPLATE = "List 3 interesting facts about \"{title_name}\" ({title_year}) {title_type}."
 
     def __init__(self):
-        self._logger = getLogger(self.__class__.__name__)
-        self._model_name = self.MODEL_NAME
-        self._client = genai.Client(api_key=self.GEMINI_API_KEY)
-        self._content_config=types.GenerateContentConfig(system_instruction=self.TITLE_FACTS_SYSTEM_INSTRUCTION)
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def prompt_title_facts(self, title_name, title_year, title_type):
         input_text = self.TITLE_FACTS_PROMPT_TEMPLATE.format(title_name=title_name, title_year=title_year,
                                                              title_type=title_type)
 
-        contents = [input_text]
+        data = {
+            "system_instruction": {
+                "parts": [self.TITLE_FACTS_SYSTEM_INSTRUCTION]
+            },
+            "contents": [{
+                "parts": [input_text]
+            }]
+        }
 
-        self._logger.warning(f"Generating '{self._model_name}' outputs for title facts prompt")
+        self._logger.warning(f"Generating '{self.MODEL_NAME}' outputs for title facts prompt...")
 
-        model_response = self._client.models.generate_content(model=self._model_name, config=self._content_config,
-                                                              contents=contents)
+        model_response = "Try again later..."
 
-        return model_response.text
+        try:
+            response = requests.post(self.API_URL, headers=self.API_HEADERS, json=data)
+            response.raise_for_status()
+            response_json = response.json()
+
+            model_response = response_json["candidates"][0]["content"]["parts"][0]["text"]
+        except Exception:
+            self._logger.debug(f"Failed to request title facts for \"{title_name}\" ({title_year}) {title_type}")
+
+        return model_response
