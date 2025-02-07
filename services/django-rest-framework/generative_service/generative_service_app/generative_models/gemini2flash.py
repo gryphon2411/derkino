@@ -54,6 +54,6 @@ class Gemini2FlashGenerativeModel:
 
             model_response = response_json["candidates"][0]["content"]["parts"][0]["text"]
         except Exception:
-            self._logger.debug(f"Failed to request title facts for \"{title_name}\" ({title_year}) {title_type}")
+            self._logger.exception(f"Failed to request title facts for \"{title_name}\" ({title_year}) {title_type}")
 
         return model_response
