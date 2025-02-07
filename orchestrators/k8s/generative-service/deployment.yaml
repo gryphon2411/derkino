@@ -42,7 +42,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: gemini-api-key
-              key: key
+              key: api-key
         - name: GENERATIVE_MODEL_NAME
           # Possible values: gemma, phi3, mixtral8x7b, gemini2flash
           value: gemini2flash

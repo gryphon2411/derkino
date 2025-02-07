@@ -7,5 +7,5 @@ metadata:
   name: gemini-api-key
 type: Opaque
 data:
-  key: <base64>
+  api-key: <base64>
 ```

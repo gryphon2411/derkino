@@ -15,10 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 COPY requirements.txt ./
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . /app/
+
 
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
@@ -32,6 +33,10 @@ WORKDIR /app
 
 # Copy app files from the builder stage
 COPY --from=builder /app /app
+
+# Copy the uwsgi executable and any other necessary binaries
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
+
 # Copy installed Python packages from the builder stage
 COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 
