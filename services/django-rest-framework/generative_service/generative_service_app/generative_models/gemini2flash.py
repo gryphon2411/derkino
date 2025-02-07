@@ -36,11 +36,15 @@ class Gemini2FlashGenerativeModel:
 
         data = {
             "system_instruction": {
-                "parts": [self.TITLE_FACTS_SYSTEM_INSTRUCTION]
+                "parts": {
+                    "text": self.TITLE_FACTS_SYSTEM_INSTRUCTION
+                }
             },
-            "contents": [{
-                "parts": [input_text]
-            }]
+            "contents": {
+                "parts": {
+                    "text": input_text
+                }
+            }
         }
 
         self._logger.warning(f"Generating '{self.MODEL_NAME}' outputs for title facts prompt...")
