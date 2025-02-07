@@ -12,13 +12,13 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python-dev-is-python3
 
 # Copy requirements.txt first for caching
-COPY services/django-rest-framework/generative_service/requirements.txt ./
+COPY requirements.txt ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
-COPY services/django-rest-framework/generative_service/ /app/
+COPY . /app/
 
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
