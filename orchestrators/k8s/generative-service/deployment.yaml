@@ -1,12 +1,4 @@
 apiVersion: v1
-kind: Secret
-metadata:
-  name: huggingface-hub-access-token
-type: Opaque
-data:
-  token: aGZfWVRzVVNhVkd3YnRjb3FHRXB0Smt5a0hMZ1lyUW9JSm93aw==
----
-apiVersion: v1
 kind: Service
 metadata:
   name: generative-service

@@ -180,6 +180,30 @@ helm_install_and_wait() {
     helm status $release_name -n $namespace
 }
 
+create_secret_and_wait() {
+    local yaml_file=$1
+
+    echo -e "\nkubectl apply -f $yaml_file"
+    kubectl apply -f $yaml_file
+
+    local namespace=$(yq ea 'select(.metadata.namespace?) | .metadata.namespace? // "default"' $yaml_file | head -n 1)
+
+    if [ -z "$namespace" ]; then
+        namespace="default"
+    fi
+
+    local secret_name=$(yq e '.metadata.name' $yaml_file)
+
+    echo -n -e "\nCreating secret/$secret_name"
+    while [[ $(kubectl -n $namespace get secret $secret_name -o 'jsonpath={.metadata.creationTimestamp}') == "" ]]; do
+        sleep 1
+        echo -n "."
+    done
+    echo
+
+    kubectl -n $namespace get secret $secret_name
+}
+
 start_time=$(date +%s)
 
 prompt_cluster_environment
@@ -262,7 +286,8 @@ if confirm "Derkino trend service"; then
 fi
 
 if confirm "Derkino generative service"; then
-    create_deploy_and_wait orchestrators/k8s/generative-service-deployment.yaml
+    create_secret_and_wait orchestrators/k8s/generative-service/huggingface-secret.yaml
+    create_deploy_and_wait orchestrators/k8s/generative-service/deployment.yaml
 fi
 
 if confirm "Derkino ui"; then
