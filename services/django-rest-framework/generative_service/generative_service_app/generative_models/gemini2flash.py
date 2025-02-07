@@ -23,8 +23,7 @@ class Gemini2FlashGenerativeModel:
     API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
     API_URL = f"{API_BASE_URL}/{MODEL_NAME}:generateContent?key={API_KEY}"
     API_HEADERS = {"Content-Type": "application/json"}
-    TITLE_FACTS_SYSTEM_INSTRUCTION = ("When providing lists of facts or information, present the facts directly "
-                                      "without introductory or concluding sentences.")
+    TITLE_FACTS_SYSTEM_INSTRUCTION = "When listing facts, present the facts without introductory or concluding sentences."
     TITLE_FACTS_PROMPT_TEMPLATE = "List 3 interesting facts about \"{title_name}\" ({title_year}) {title_type}."
 
     def __init__(self):
