@@ -5,20 +5,14 @@ FROM python:3.10 AS builder
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create non-root user 'appuser' (UID 1000) and group for security
-RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
-
 # Set work directory
 WORKDIR /app
 
-# Install build tools (as root, temporarily)
+# Install build tools (only needed for building)
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential python-dev-is-python3
 
 # Copy requirements.txt first for caching
 COPY requirements.txt ./
-
-# Switch to non-root user
-USER appuser
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --user -r requirements.txt
@@ -33,19 +27,13 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create the same non-root user and group in the final image
-RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
-
 # Set work directory
 WORKDIR /app
 
 # Copy app files from the builder stage
 COPY --from=builder /app /app
-# Copy installed Python packages from the builder stage (chown to ensure correct ownership)
-COPY --from=builder --chown=appuser:appuser /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
-
-# Switch to non-root user
-USER appuser
+# Copy installed Python packages from the builder stage
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 
 # Expose the port uWSGI will listen on
 EXPOSE 8000
