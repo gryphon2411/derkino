@@ -1,3 +1,25 @@
+# Use an official Python runtime as an image builder
+FROM python:3.10 AS builder
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set work directory
+WORKDIR /app
+
+# Install build tools (only needed for building)
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential python-dev-is-python3
+
+# Copy requirements.txt first for caching
+COPY services/django-rest-framework/generative_service/requirements.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
+COPY services/django-rest-framework/generative_service/ /app/
+
 # Use an official Python runtime as a parent image
 FROM python:3.10-slim
 
@@ -8,17 +30,10 @@ ENV PYTHONUNBUFFERED 1
 # Set work directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app/
-
-# (Obsolete) Install PyTorch, torchvision, and torchaudio from PyTorch wheel files
-# RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-
-# Install C compiler and the Python development headers
-RUN apt-get update && apt-get install -y build-essential python-dev-is-python3
-
-# Install any needed packages specified in requirements.txt
-RUN pip install -r requirements.txt
+# Copy app files from the builder stage
+COPY --from=builder /app /app
+# Copy installed Python packages from the builder stage
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 
 # Expose the port uWSGI will listen on
 EXPOSE 8000
