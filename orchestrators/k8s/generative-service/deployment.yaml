@@ -38,9 +38,14 @@ spec:
             secretKeyRef:
               name: huggingface-hub-access-token
               key: token
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gemini-api-key
+              key: key
         - name: GENERATIVE_MODEL_NAME
-          # Possible values: gemma, phi3, mixtral8x7b
-          value: mixtral8x7b
+          # Possible values: gemma, phi3, mixtral8x7b, gemini2flash
+          value: gemini2flash
         - name: DATA_SERVICE_URL
           value: http://data-service:8082/api/v1/data
 
