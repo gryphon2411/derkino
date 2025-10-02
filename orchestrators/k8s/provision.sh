@@ -2,6 +2,29 @@
 
 CLUSTER_ENVIRONMENT=""
 
+# Check for required dependencies
+check_dependencies() {
+    local dependencies=("kubectl" "yq" "minikube" "helm" "jq")
+    
+    while true; do
+        local missing=false
+        
+        for tool in "${dependencies[@]}"; do
+            if ! command -v "$tool" &> /dev/null; then
+                echo "Error: $tool is required but not installed."
+                missing=true
+            fi
+        done
+        
+        if [ "$missing" = false ]; then
+            break
+        fi
+        
+        echo
+        read -p "Install the missing tools and press Enter to retry (or Ctrl+C to exit): "
+    done
+}
+
 prompt_cluster_environment() {
     while true; do
         echo
@@ -206,6 +229,7 @@ create_secret_and_wait() {
 
 start_time=$(date +%s)
 
+check_dependencies
 prompt_cluster_environment
 
 echo -e "\nProvisioning Derkino k8s $CLUSTER_ENVIRONMENT cluster...\n"
