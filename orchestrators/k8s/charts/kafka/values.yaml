@@ -1,11 +1,26 @@
+image:
+  repository: bitnamilegacy/kafka
+
 service:
   type: NodePort
+
+clusterId: J1mmUOT9JBz1rNWKu2uZZi
 
 metrics:
   jmx:
     enabled: true
+    image:
+      repository: bitnamilegacy/jmx-exporter
 
 sasl:
   client:
     users: ["root"]
     passwords: ["w43Pw4Q9cb"]
+
+defaultInitContainers:
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+  autoDiscovery:
+    image:
+      repository: bitnamilegacy/kubectl

@@ -276,7 +276,7 @@ fi
 if confirm "Kafka system"; then
     # https://artifacthub.io/packages/helm/bitnami/kafka
     helm repo add bitnami https://charts.bitnami.com/bitnami
-    helm_install_and_wait kafka-system kafka bitnami/kafka 26.6.2 orchestrators/k8s/charts/kafka/values.yaml
+    helm_install_and_wait kafka-system kafka bitnami/kafka 32.4.3 orchestrators/k8s/charts/kafka/values.yaml
     echo
     kubectl get secret kafka-user-passwords --namespace kafka-system -o jsonpath='{.data.client-passwords}' | base64 -d
 fi
