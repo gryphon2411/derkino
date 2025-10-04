@@ -13,14 +13,7 @@ logger = get_logger(Path(__file__).stem)
 
 
 def read_csv_data_and_insert_to_database(csv_file_path):
-    connection_uri = "{uri_format}://{username}:{password}@{host}".format(
-        uri_format=os.getenv('MONGO_URI_FORMAT'),
-        username=os.getenv('MONGO_USERNAME'),
-        password=os.getenv('MONGO_PASSWORD'),
-        host=os.getenv('MONGO_HOST')
-    )
-    client = MongoClient(connection_uri)
-    client.server_info()  # Blocks until the connection is ready
+    client = get_database_connection()
     db = client.derkino
     write_command_batch_limit_size = 100000  # https://www.mongodb.com/docs/manual/reference/limits/#mongodb-limit-Write-Command-Batch-Limit-Size
     total_inserted_ids = 0
@@ -59,6 +52,28 @@ def insert_csv_data_to_database(csv_data, db):
     return total_inserted_ids
 
 
+def get_database_connection():
+    """Establish and return a database connection."""
+    connection_uri = "{uri_format}://{username}:{password}@{host}".format(
+        uri_format=os.getenv('MONGO_URI_FORMAT'),
+        username=os.getenv('MONGO_USERNAME'),
+        password=os.getenv('MONGO_PASSWORD'),
+        host=os.getenv('MONGO_HOST')
+    )
+    client = MongoClient(connection_uri)
+    client.server_info()  # Blocks until the connection is ready
+    return client
+
+
+def create_text_index(db):
+    logger.info("Creating text index on primaryTitle and originalTitle fields...")
+    result = db.title_basics.create_index([
+        ("primaryTitle", "text"),
+        ("originalTitle", "text")
+    ], name="title_text_index", weights={"primaryTitle": 2, "originalTitle": 1})
+    logger.info(f"Text index created: {result}")
+
+
 def main():
     execution_start, process_start = time.perf_counter(), time.process_time()
 
@@ -69,6 +84,12 @@ def main():
     download_archive(archive_file_path_)
     extract_csv_from_archive(archive_file_path_, csv_file_path_)
     read_csv_data_and_insert_to_database(csv_file_path_)
+    
+    # Create text index for search functionality
+    client = get_database_connection()
+    db = client.derkino
+    create_text_index(db)
+    
     delete_data_dir(data_dir_)
 
     execution_end, process_end = time.perf_counter(), time.process_time()
