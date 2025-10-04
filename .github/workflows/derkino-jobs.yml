@@ -8,6 +8,12 @@ on:
       - master
     paths:
       - jobs/**
+  # Specifies that this workflow should run on every pull request event targeting the branches in the list.
+  pull_request:
+    branches:
+      - master
+    paths:
+      - jobs/**
 
 # Creates a job ID (build) and declares the type of machine that the job should run on.
 jobs:

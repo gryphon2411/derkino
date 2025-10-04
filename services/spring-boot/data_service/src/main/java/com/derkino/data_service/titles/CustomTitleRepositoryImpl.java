@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.data.mongodb.core.query.TextQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomTitleRepositoryImpl implements CustomTitleRepository {
@@ -16,8 +19,8 @@ public class CustomTitleRepositoryImpl implements CustomTitleRepository {
     
     @Override
     public Page<Title> getTitlesPage(Pageable pageable, String titleType, String primaryTitle, Boolean isAdult,
-                                     List<String> genres) {
-        Query query = buildTitlesQuery(titleType, primaryTitle, isAdult, genres);
+                                     List<String> genres, String freeText) {
+        Query query = buildTitlesQuery(titleType, primaryTitle, isAdult, genres, freeText);
 
         query.with(pageable);
 
@@ -26,20 +29,44 @@ public class CustomTitleRepositoryImpl implements CustomTitleRepository {
         return new PageImpl<>(content, pageable, mongoTemplate.count(query, Title.class));
     }
 
-    private Query buildTitlesQuery(String titleType, String primaryTitle, Boolean isAdult, List<String> genres) {
-        Query query = new Query();
+    private Query buildTitlesQuery(String titleType, String primaryTitle, Boolean isAdult, List<String> genres, String freeText) {
+        Query query;
+        
+        // Use text search if freeText is provided
+        if (freeText != null && !freeText.trim().isEmpty()) {
+            TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matching(freeText);
+            query = TextQuery.queryText(textCriteria);
+        } else {
+            query = new Query();
+        }
 
         if (titleType != null) {
             query.addCriteria(Criteria.where("titleType").is(titleType));
         }
-        if (primaryTitle != null) {
+        if (primaryTitle != null && (freeText == null || freeText.trim().isEmpty())) {
+            // Only apply primaryTitle regex if freeText is not being used
             query.addCriteria(Criteria.where("primaryTitle").regex(primaryTitle, "i"));
         }
         if (isAdult != null) {
             query.addCriteria(Criteria.where("isAdult").is(isAdult));
         }
         if (genres != null && !genres.isEmpty()) {
-            query.addCriteria(Criteria.where("genres").in(genres));
+            // For genres, we'll use regex matching to search within the list
+            if (freeText != null && !freeText.trim().isEmpty()) {
+                // When freeText is used, we add genres as additional criteria
+                Criteria genresCriteria = new Criteria();
+                List<Criteria> genreCriterias = new ArrayList<>();
+                for (String genre : genres) {
+                    genreCriterias.add(Criteria.where("genres").regex(genre, "i"));
+                }
+                if (!genreCriterias.isEmpty()) {
+                    genresCriteria.orOperator(genreCriterias.toArray(new Criteria[0]));
+                    query.addCriteria(genresCriteria);
+                }
+            } else {
+                // When freeText is not used, use the existing in operator
+                query.addCriteria(Criteria.where("genres").in(genres));
+            }
         }
 
         return query;

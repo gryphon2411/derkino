@@ -1,13 +1,20 @@
 # The name of this workflow.
 name: derkino data service ci
 
-# Specifies that this workflow should run on every push event for the branches in the list.
 on:
+  # Specifies that this workflow should run on every push event for the branches in the list.
   push:
     branches:
       - master
     paths:
       - services/spring-boot/data_service/**
+  # Specifies that this workflow should run on every pull request event targeting the branches in the list.
+  pull_request:
+    branches:
+      - master
+    paths:
+      - services/spring-boot/data_service/**
+
 
 # Creates a job ID (build) and declares the type of machine that the job should run on.
 jobs:
