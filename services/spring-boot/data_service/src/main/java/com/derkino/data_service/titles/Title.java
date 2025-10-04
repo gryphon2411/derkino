@@ -13,7 +13,9 @@ public class Title {
     @Field("tconst")
     public String titleConst;
     public String titleType;
+    @TextIndexed(weight=2)
     public String primaryTitle;
+    @TextIndexed(weight=1)
     public String originalTitle;
     public boolean isAdult;
     public int startYear;

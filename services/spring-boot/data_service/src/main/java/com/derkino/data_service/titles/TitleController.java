@@ -28,7 +28,8 @@ public class TitleController {
                                         @RequestParam(required = false) String titleType,
                                         @RequestParam(required = false) String primaryTitle,
                                         @RequestParam(required = false) Boolean isAdult,
-                                        @RequestParam(required = false) List<String> genres) {
-        return service.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres);
+                                        @RequestParam(required = false) List<String> genres,
+                                        @RequestParam(required = false) String freeText) {
+        return service.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres, freeText);
     }
 }

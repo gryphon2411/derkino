@@ -33,8 +33,8 @@ public class TitleService {
     }
 
     public Page<TitleDto> getTitlesPage(Pageable pageable, String titleType, String primaryTitle, Boolean isAdult,
-                                        List<String> genres) {
-        Page<Title> titlesPage = repository.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres);
+                                        List<String> genres, String freeText) {
+        Page<Title> titlesPage = repository.getTitlesPage(pageable, titleType, primaryTitle, isAdult, genres, freeText);
         Page<TitleDto> titlesDtoPage = titlesPage.map(TitleDto::new);
 
         for (Title title : titlesPage) {
