@@ -25,7 +25,12 @@ export default function TitlesPage() {
   return (
     <div>
       <SearchInput />
-      <ToggleButtonGroup value={view} exclusive onChange={handleViewChange}>
+      <ToggleButtonGroup 
+        value={view} 
+        exclusive 
+        onChange={handleViewChange}
+        sx={{ ml: 2 }}
+      >
         <ToggleButton value="table" title="Table View">
           <TableViewIcon />
         </ToggleButton>
