@@ -88,9 +88,16 @@ This is the main repository-wide instructions file for GitHub Copilot. For file-
 - Unit tests: Located in each service's `src/test` directory
 - Integration testing: Via Kubernetes deployment with live services
 - Manual testing: Through UI at `http://local.derkino.com`
+- Visual verification: Using browser automation tools to inspect and interact with the UI
 - Test commands:
   * Frontend: `npm test` in `uis/react-ui/derkino-ui/`
   * Backend services: Gradle test tasks (e.g., `./gradlew test`)
+
+### GitHub Workflow
+- Feature development through GitHub issues and feature branches
+- Code review via pull requests with verification comments
+- Manual UI verification after deployment before merging
+- Structured commit messages following Conventional Commits specification
 
 ### Debugging
 - Use browser developer tools for frontend debugging

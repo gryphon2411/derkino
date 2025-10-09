@@ -72,5 +72,8 @@ The Derkino project follows a microservices architecture with multiple frontend 
 3. **Consider Deployment Impact**: When suggesting changes, consider how they affect Kubernetes deployments
 4. **Maintain Technology Consistency**: Respect the conventions of each technology stack used in different services
 5. **Non-Over Engineered Approach**: Follow the project's principle of avoiding over-engineering. Provide "just enough" solutions that meet requirements without adding unnecessary complexity. When creating designs, focus on essential features and defer advanced functionality to future iterations unless explicitly requested.
+6. **Embrace Visual Verification**: Recognize the importance of hands-on UI testing and verification using browser automation tools as part of the development workflow
+7. **Value UX Details**: Pay attention to subtle UI/UX improvements like proper spacing and element positioning that enhance user experience
+8. **Follow GitHub Workflow**: Adhere to the structured GitHub workflow involving issues, feature branches, pull requests, code reviews, and manual verification before merging
 
 When asked to make changes, prefer using the built-in editing capabilities of the agent mode rather than just providing code snippets.
