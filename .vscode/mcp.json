@@ -5,6 +5,10 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": { "MEMORY_FILE_PATH": "${workspaceFolder}/.mcp/memory.json" }
-    }
+    },
+    "filesystem": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+		}
   }
 }
