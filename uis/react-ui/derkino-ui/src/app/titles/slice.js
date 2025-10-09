@@ -5,7 +5,7 @@ import { setError } from '@/app/slice';
 export const fetchTitles = createAsyncThunk(
   'titles/fetchTitles',
   async (_, { getState, requestId, dispatch }) => {
-    const { currentRequestId, page, rowsPerPage } = getState().titles;
+    const { currentRequestId, page, rowsPerPage, freeText } = getState().titles;
     
     // Prevents duplicated fetches due to fast consecutive calls
     if (requestId !== currentRequestId) {
@@ -13,7 +13,13 @@ export const fetchTitles = createAsyncThunk(
     }
 
     try {
-      const response = await fetch(`${API_HOST_URL}/data/titles?page=${page}&size=${rowsPerPage}`);
+      // Build URL with optional freeText parameter
+      let url = `${API_HOST_URL}/data/titles?page=${page}&size=${rowsPerPage}`;
+      if (freeText) {
+        url += `&freeText=${encodeURIComponent(freeText)}`;
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
 
       if (!response.ok) {
@@ -38,9 +44,15 @@ const titlesSlice = createSlice({
     content: [],
     page: 0,
     rowsPerPage: 10,
-    view: 'table'
+    view: 'table',
+    freeText: ''
   },
   reducers: {
+    setFreeText: (state, action) => {
+      state.freeText = action.payload;
+      state.content = []; // Clear content to prepare for new results
+      state.page = 0;     // Reset to first page
+    },
     setPage: (state, action) => {
       state.page = action.payload;
     },
@@ -85,6 +97,6 @@ const titlesSlice = createSlice({
   },
 });
 
-export const { setPage, setRowsPerPage, setView } = titlesSlice.actions;
+export const { setPage, setRowsPerPage, setView, setFreeText } = titlesSlice.actions;
 
 export default titlesSlice.reducer;
