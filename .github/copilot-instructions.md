@@ -134,3 +134,32 @@ This project follows a "just enough" approach to implementation:
 - Keep designs simple and maintainable
 - Avoid premature optimization
 - Focus on meeting current requirements rather than anticipating future needs
+
+## Git Commit Message Best Practices
+
+The Derkino project follows the **Conventional Commits** specification with these key points:
+
+- **Format**: `<type>(scope): subject` followed by an optional body and/or footer.
+- **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`.
+- **Subject**: Max 50 chars, imperative mood, capitalized, no period at the end.
+- **Body**: Max 72 chars per line, separated from the subject by a blank line.
+- **Footer**: Used for linking issues or **describing breaking changes**. Use appropriate formats for issue linking or breaking change descriptions.
+- **Breaking Changes**: Mark breaking changes by adding a `!` after the type/scope (e.g., `feat(auth)!:`) or by adding a `BREAKING CHANGE:` footer.
+
+### Examples
+
+**Feature:**
+```
+feat(auth): Add JWT token refresh functionality
+
+Implement automatic JWT token refresh when a request fails due to an expired token.
+```
+
+**Fix with Issue Linking:**
+```
+fix(titles): Correct pagination for free text search
+
+- Resolve issue where skip parameter was miscalculated.
+
+Include issue linking in footer when applicable.
+```
