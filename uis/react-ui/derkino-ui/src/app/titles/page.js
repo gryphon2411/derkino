@@ -9,6 +9,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import TitlesTable from '@/app/titles/components/TitlesTable';
 import TitlesGrid from '@/app/titles/components/TitlesGrid';
 import TableViewIcon from '@mui/icons-material/ViewList';
+import SearchInput from '@/app/titles/components/SearchInput';
 
 export default function TitlesPage() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ export default function TitlesPage() {
 
   return (
     <div>
+      <SearchInput />
       <ToggleButtonGroup value={view} exclusive onChange={handleViewChange}>
         <ToggleButton value="table" title="Table View">
           <TableViewIcon />
