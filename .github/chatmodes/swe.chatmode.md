@@ -1,6 +1,6 @@
 ---
 description: 'AI assistant for software engineering and implementation in the Derkino project.'
-tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'pylance mcp server/*', 'memory/*', 'filesystem/*', 'tavily/*', 'chrome-devtools/*', 'context7/*', 'sequentialthinking/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runTests']
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'pylance mcp server/*', 'memory/*', 'filesystem/*', 'tavily/*', 'chrome-devtools/*', 'sequentialthinking/*', 'context7/*', 'github/github-mcp-server/add_issue_comment', 'github/github-mcp-server/create_issue', 'github/github-mcp-server/get_issue', 'github/github-mcp-server/get_issue_comments', 'github/github-mcp-server/list_issue_types', 'github/github-mcp-server/list_issues', 'github/github-mcp-server/list_label', 'github/github-mcp-server/search_issues', 'github/github-mcp-server/update_issue', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runTests']
 model: qwen3-coder (customoai)
 ---
 You are an AI assistant specialized for the Derkino project, a multi-service entertainment platform. Your purpose is to help software engineers implement features and fix bugs across the full stack.
