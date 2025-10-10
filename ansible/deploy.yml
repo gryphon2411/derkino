@@ -1,0 +1,16 @@
+# Main deployment playbook for Derkino
+
+---
+- name: Deploy Derkino Application
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - group_vars/all/vars.yml
+    - environments/{{ environment }}.yml
+
+  roles:
+    - common
+    - kubernetes
+    - secrets
+    - ingress
