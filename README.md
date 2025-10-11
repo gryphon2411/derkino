@@ -31,26 +31,38 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
    git clone https://github.com/gryphon2411/derkino.git
    cd derkino
    
-   # The directory structure is automatically created with the repository
-   # No manual creation needed
+   # The directory structure is created by the Ansible/Helm deployment system
+   # No manual creation needed after cloning
    ```
 
-3. **Deploy to local environment**:
+3. **Set up Ansible Vault (Security Critical)**:
+   ```bash
+   # IMPORTANT: NEVER commit vault password files to version control
+   # Create a secure vault password file for local environment (DO NOT COMMIT THIS FILE)
+   # echo "your_secure_local_password" > ~/.derkino-local-vault-password
+   
+   # Create a secure vault password file for dev environment (DO NOT COMMIT THIS FILE)
+   # echo "your_secure_dev_password" > ~/.derkino-dev-vault-password
+   ```
+
+4. **Deploy to local environment**:
    ```bash
    # Deploy using Ansible with local environment
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-id @deployment/secrets/local/ansible-vault-password
+   # IMPORTANT: Replace ~/.derkino-local-vault-password with the path to your local vault password file
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-id local@~/.derkino-local-vault-password
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --check
+   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-id local@~/.derkino-local-vault-password --check
    ```
 
-4. **Deploy to dev environment**:
+5. **Deploy to dev environment**:
    ```bash
    # Deploy using Ansible with dev environment
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-id @deployment/secrets/dev/ansible-vault-password
+   # IMPORTANT: Replace ~/.derkino-dev-vault-password with the path to your dev vault password file
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-id dev@~/.derkino-dev-vault-password
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook ansible/deploy.yml -i ansible/inventory/dev -e "environment=dev" --check
+   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-id dev@~/.derkino-dev-vault-password --check
    ```
 
 ### How It Works
@@ -62,7 +74,7 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
 
 - **Ansible Orchestration**: The `deployment/ansible/deploy.yml` playbook coordinates the deployment:
   - Loads environment-specific variables from `ansible/environments/`
-  - Uses Ansible Vault (`secrets/local/`, `secrets/dev/`) for secure secret management
+  - Uses Ansible Vault for secure secret management (vault passwords must be stored locally and never committed)
   - Manages the deployment of Helm charts in the correct order
 
 - **Environment Configuration**:
@@ -74,6 +86,17 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
 After deployment, access the application at:
 - Local: http://local.derkino.com
 - Dev: http://dev.derkino.com
+
+### Security Notice
+
+**Important**: Never commit Ansible Vault password files to version control. These files contain the decryption keys to all your secrets and putting them in the repository puts the entire system at risk of compromise. 
+
+Per Ansible's own documentation:
+> "Do not add password files to source control."
+
+Store vault passwords in a secure secret manager (HashiCorp Vault, 1Password, Bitwarden) or share them with the team via encrypted channels (Signal, PGP).
+
+Only encrypted secrets (e.g., `secrets/local/db-password.yml`) should be committed, and access to this repository should be restricted.
 
 ## Components
 ![Derkino Components Diagram](/architecture/components.drawio.svg)
