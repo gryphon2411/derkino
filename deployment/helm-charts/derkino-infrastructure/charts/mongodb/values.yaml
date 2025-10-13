@@ -1,0 +1,37 @@
+# Default values for MongoDB subchart
+
+# Namespace configuration
+namespace:
+  create: true
+  name: mongodb-system
+
+# Secret configuration
+secret:
+  name: mongodb-root-user-credentials
+  username: root
+  password: X6d9r2SgJ8xQgpGL
+
+# Service configuration
+service:
+  name: mongodb
+  port: 27017
+  targetPort: 27017
+  type: NodePort
+
+# StatefulSet configuration
+statefulset:
+  name: mongodb
+  replicas: 1
+  image:
+    repository: mongo
+    tag: latest
+  containerPort: 27017
+  volumeMounts:
+    data:
+      name: mongodb-data
+      mountPath: /data/db
+  volumeClaimTemplates:
+    data:
+      name: mongodb-data
+      accessMode: ReadWriteOnce
+      storageSize: 20Gi
