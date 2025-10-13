@@ -28,3 +28,7 @@ dependencies:
     version: "0.1.0"
     repository: "file://charts/mongodb"
     condition: mongodb.enabled
+  - name: postgresql
+    version: "0.1.0"
+    repository: "file://charts/postgresql"
+    condition: postgresql.enabled
