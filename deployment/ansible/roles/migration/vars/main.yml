@@ -1,0 +1,16 @@
+# Default variables for Migration role
+
+# Namespace for infrastructure components
+infrastructure_namespace: "infrastructure"
+
+# Namespace for parallel deployment
+parallel_namespace: "infrastructure-parallel"
+
+# Path to Helm charts directory
+helm_charts_path: "{{ lookup('env', 'PWD') }}/deployment/helm-charts/derkino-infrastructure"
+
+# Path to kubectl manifests
+kubectl_manifests_path: "{{ lookup('env', 'PWD') }}/orchestrators/k8s"
+
+# Path to migration patches
+migration_patches_path: "{{ lookup('env', 'PWD') }}/deployment/ansible/roles/migration/files/patches"

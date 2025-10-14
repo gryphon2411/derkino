@@ -12,5 +12,7 @@
   roles:
     - common
     - kubernetes
+    - { role: helm, when: "migration_enabled is not defined or migration_enabled == false" }
+    - { role: migration, when: "migration_enabled is defined and migration_enabled == true" }
     - secrets
     - ingress

@@ -1,0 +1,14 @@
+# Handlers for Helm role
+# Wait for services to become ready after deployment
+
+- name: wait for mongodb
+  command: kubectl wait --for=condition=ready pod -l app=mongodb --namespace {{ infrastructure_namespace }} --timeout=300s
+
+- name: wait for postgresql
+  command: kubectl wait --for=condition=ready pod -l app=postgresql --namespace {{ infrastructure_namespace }} --timeout=300s
+
+- name: wait for redis-stack
+  command: kubectl wait --for=condition=ready pod -l app=redis-stack --namespace {{ infrastructure_namespace }} --timeout=300s
+
+- name: wait for kafka
+  command: kubectl wait --for=condition=ready pod -l app=kafka --namespace {{ infrastructure_namespace }} --timeout=300s

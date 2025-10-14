@@ -1,0 +1,10 @@
+# Default variables for Helm role
+
+# Namespace for infrastructure components
+infrastructure_namespace: "infrastructure"
+
+# Path to Helm charts directory
+helm_charts_path: "{{ lookup('env', 'PWD') }}/deployment/helm-charts/derkino-infrastructure"
+
+# Helm cache directory
+helm_cache_dir: "{{ lookup('env', 'HOME') }}/.cache/helm"

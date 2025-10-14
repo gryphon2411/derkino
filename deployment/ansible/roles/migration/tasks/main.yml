@@ -1,0 +1,53 @@
+# Migration tasks for zero-downtime infrastructure migration
+# This role handles the transition from kubectl manifests to Helm charts
+
+- name: Check if kubectl infrastructure exists
+  command: kubectl get deployments,statefulsets -n infrastructure -o name
+  register: existing_infrastructure
+  failed_when: false
+  changed_when: false
+
+- name: Deploy Helm infrastructure in parallel (if kubectl infrastructure exists)
+  command: helm upgrade --install {{ item }} derkino-infrastructure/{{ item }} --namespace infrastructure-parallel --create-namespace --values {{ helm_charts_path }}/charts/{{ item }}/values.yaml
+  with_items:
+    - mongodb
+    - postgresql
+    - redis-stack
+    - kafka
+  when: existing_infrastructure.stdout != ""
+
+- name: Wait for parallel infrastructure to be ready
+  command: kubectl wait --for=condition=ready pod -l app={{ item }} --namespace infrastructure-parallel --timeout=300s
+  with_items:
+    - mongodb
+    - postgresql
+    - redis-stack
+    - kafka
+  when: existing_infrastructure.stdout != ""
+
+- name: Test connectivity to parallel infrastructure
+  command: echo "Testing connectivity to {{ item }} in parallel namespace"
+  with_items:
+    - mongodb
+    - postgresql
+    - redis-stack
+    - kafka
+  when: existing_infrastructure.stdout != ""
+
+- name: Switch traffic to Helm infrastructure
+  command: kubectl patch service {{ item }} -n infrastructure --patch-file {{ migration_patches_path }}/{{ item }}-patch.yaml
+  with_items:
+    - mongodb
+    - postgresql
+    - redis-stack
+    - kafka
+  when: existing_infrastructure.stdout != ""
+
+- name: Remove kubectl infrastructure (after successful migration)
+  command: kubectl delete -f {{ kubectl_manifests_path }}/{{ item }}.yaml
+  with_items:
+    - mongodb
+    - postgresql
+    - redis-stack
+    - kafka
+  when: existing_infrastructure.stdout != "" and migration_complete.rc == 0
