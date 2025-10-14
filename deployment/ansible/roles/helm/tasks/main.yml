@@ -23,6 +23,7 @@
     --values {{ helm_charts_path }}/charts/mongodb/values.yaml
   notify:
     - wait for mongodb
+    - test mongodb connectivity
   changed_when: false
 
 - name: Deploy PostgreSQL via Helm
@@ -32,6 +33,7 @@
     --values {{ helm_charts_path }}/charts/postgresql/values.yaml
   notify:
     - wait for postgresql
+    - test postgresql connectivity
   changed_when: false
 
 - name: Deploy Redis-Stack via Helm
@@ -41,6 +43,7 @@
     --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
   notify:
     - wait for redis-stack
+    - test redis connectivity
   changed_when: false
 
 - name: Deploy Kafka via Helm
@@ -50,4 +53,5 @@
     --values {{ helm_charts_path }}/charts/kafka/values.yaml
   notify:
     - wait for kafka
+    - test kafka connectivity
   changed_when: false
