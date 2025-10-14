@@ -1,14 +1,18 @@
 # Handlers for Helm role
 # Wait for services to become ready after deployment
 
-- name: wait for mongodb
-  command: kubectl wait --for=condition=ready pod -l app=mongodb --namespace {{ infrastructure_namespace }} --timeout=300s
+- name: Wait for mongodb
+  ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=mongodb --namespace {{ helm_infrastructure_namespace }} --timeout=300s
+  changed_when: false
 
-- name: wait for postgresql
-  command: kubectl wait --for=condition=ready pod -l app=postgresql --namespace {{ infrastructure_namespace }} --timeout=300s
+- name: Wait for postgresql
+  ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=postgresql --namespace {{ helm_infrastructure_namespace }} --timeout=300s
+  changed_when: false
 
-- name: wait for redis-stack
-  command: kubectl wait --for=condition=ready pod -l app=redis-stack --namespace {{ infrastructure_namespace }} --timeout=300s
+- name: Wait for redis-stack
+  ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=redis-stack --namespace {{ helm_infrastructure_namespace }} --timeout=300s
+  changed_when: false
 
-- name: wait for kafka
-  command: kubectl wait --for=condition=ready pod -l app=kafka --namespace {{ infrastructure_namespace }} --timeout=300s
+- name: Wait for kafka
+  ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=kafka --namespace {{ helm_infrastructure_namespace }} --timeout=300s
+  changed_when: false

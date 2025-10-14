@@ -1,7 +1,7 @@
 # Global variables applicable to all environments
 
 # Enable migration mode (set to true for zero-downtime migration from kubectl to Helm)
-migration_enabled: false
+migration_enabled: true
 
 # Placeholder for global configuration
 # This file will be loaded for every playbook run

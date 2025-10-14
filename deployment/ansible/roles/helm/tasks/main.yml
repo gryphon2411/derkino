@@ -2,35 +2,52 @@
 # Deploys infrastructure components using Helm charts
 
 - name: Ensure Helm is available
-  command: helm version
+  ansible.builtin.command: helm version
   register: helm_version_result
   failed_when: helm_version_result.rc != 0
   changed_when: false
 
 - name: Add derkino-infrastructure Helm repository
-  command: helm repo add derkino-infrastructure {{ helm_charts_path }}
+  ansible.builtin.command: helm repo add derkino-infrastructure {{ helm_charts_path }}
   args:
     creates: "{{ helm_cache_dir }}/repository/derkino-infrastructure-index.yaml"
 
 - name: Update Helm repository cache
-  command: helm repo update derkino-infrastructure
+  ansible.builtin.command: helm repo update derkino-infrastructure
+  changed_when: false
 
 - name: Deploy MongoDB via Helm
-  command: helm upgrade --install mongodb derkino-infrastructure/mongodb --namespace {{ infrastructure_namespace }} --create-namespace --values {{ helm_charts_path }}/charts/mongodb/values.yaml
+  ansible.builtin.command: >
+    helm upgrade --install mongodb derkino-infrastructure/mongodb
+    --namespace {{ helm_infrastructure_namespace }} --create-namespace
+    --values {{ helm_charts_path }}/charts/mongodb/values.yaml
   notify:
     - wait for mongodb
+  changed_when: false
 
 - name: Deploy PostgreSQL via Helm
-  command: helm upgrade --install postgresql derkino-infrastructure/postgresql --namespace {{ infrastructure_namespace }} --create-namespace --values {{ helm_charts_path }}/charts/postgresql/values.yaml
+  ansible.builtin.command: >
+    helm upgrade --install postgresql derkino-infrastructure/postgresql
+    --namespace {{ helm_infrastructure_namespace }} --create-namespace
+    --values {{ helm_charts_path }}/charts/postgresql/values.yaml
   notify:
     - wait for postgresql
+  changed_when: false
 
 - name: Deploy Redis-Stack via Helm
-  command: helm upgrade --install redis-stack derkino-infrastructure/redis-stack --namespace {{ infrastructure_namespace }} --create-namespace --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
+  ansible.builtin.command: >
+    helm upgrade --install redis-stack derkino-infrastructure/redis-stack
+    --namespace {{ helm_infrastructure_namespace }} --create-namespace
+    --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
   notify:
     - wait for redis-stack
+  changed_when: false
 
 - name: Deploy Kafka via Helm
-  command: helm upgrade --install kafka derkino-infrastructure/kafka --namespace {{ infrastructure_namespace }} --create-namespace --values {{ helm_charts_path }}/charts/kafka/values.yaml
+  ansible.builtin.command: >
+    helm upgrade --install kafka derkino-infrastructure/kafka
+    --namespace {{ helm_infrastructure_namespace }} --create-namespace
+    --values {{ helm_charts_path }}/charts/kafka/values.yaml
   notify:
     - wait for kafka
+  changed_when: false
