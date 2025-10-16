@@ -28,12 +28,12 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.secret.name }}
+              name: {{ .Values.namespace.secret.name }}
               key: username
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.secret.name }}
+              name: {{ .Values.namespace.secret.name }}
               key: password
         volumeMounts:
         - name: {{ .Values.statefulset.volumeMounts.data.name }}

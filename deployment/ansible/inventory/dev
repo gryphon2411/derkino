@@ -1,2 +1,4 @@
-[derkino]
+dev-server ansible_host=dev.derkino.com
+
+[derkino:children]
 dev-server

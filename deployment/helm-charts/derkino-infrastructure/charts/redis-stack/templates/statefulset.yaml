@@ -32,5 +32,3 @@ spec:
             secretKeyRef:
               name: {{ .Values.secret.name }}
               key: password
-        - name: REDIS_ARGS
-          value: "--requirepass $(REDIS_DEFAULT_PASS)"

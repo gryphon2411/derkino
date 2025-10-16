@@ -28,12 +28,12 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.secret.name }}
+              name: {{ .Values.namespace.secret.name }}
               key: password
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.secret.name }}
+              name: {{ .Values.namespace.secret.name }}
               key: username
         - name: POSTGRES_DB
           value: postgres

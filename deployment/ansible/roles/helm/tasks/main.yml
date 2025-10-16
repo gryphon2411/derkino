@@ -32,13 +32,13 @@
     - name: Rollback MongoDB deployment
       ansible.builtin.command: >
         helm uninstall mongodb --namespace {{ helm_infrastructure_namespace }}
-      register: mongodb_rollback_result
+      register: helm_mongodb_rollback_result
       changed_when: false
       ignore_errors: true
 
     - name: Notify MongoDB rollback status
       ansible.builtin.debug:
-        msg: "MongoDB deployment failed. Rollback status: {{ mongodb_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
+        msg: "MongoDB deployment failed. Rollback status: {{ helm_mongodb_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
       changed_when: false
 
 - name: Deploy PostgreSQL via Helm
@@ -57,13 +57,13 @@
     - name: Rollback PostgreSQL deployment
       ansible.builtin.command: >
         helm uninstall postgresql --namespace {{ helm_infrastructure_namespace }}
-      register: postgresql_rollback_result
+      register: helm_postgresql_rollback_result
       changed_when: false
       ignore_errors: true
 
     - name: Notify PostgreSQL rollback status
       ansible.builtin.debug:
-        msg: "PostgreSQL deployment failed. Rollback status: {{ postgresql_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
+        msg: "PostgreSQL deployment failed. Rollback status: {{ helm_postgresql_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
       changed_when: false
 
 - name: Deploy Redis-Stack via Helm
@@ -82,13 +82,13 @@
     - name: Rollback Redis-Stack deployment
       ansible.builtin.command: >
         helm uninstall redis-stack --namespace {{ helm_infrastructure_namespace }}
-      register: redis_stack_rollback_result
+      register: helm_redis_stack_rollback_result
       changed_when: false
       ignore_errors: true
 
     - name: Notify Redis-Stack rollback status
       ansible.builtin.debug:
-        msg: "Redis-Stack deployment failed. Rollback status: {{ redis_stack_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
+        msg: "Redis-Stack deployment failed. Rollback status: {{ helm_redis_stack_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
       changed_when: false
 
 - name: Deploy Kafka via Helm
@@ -107,11 +107,11 @@
     - name: Rollback Kafka deployment
       ansible.builtin.command: >
         helm uninstall kafka --namespace {{ helm_infrastructure_namespace }}
-      register: kafka_rollback_result
+      register: helm_kafka_rollback_result
       changed_when: false
       ignore_errors: true
 
     - name: Notify Kafka rollback status
       ansible.builtin.debug:
-        msg: "Kafka deployment failed. Rollback status: {{ kafka_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
+        msg: "Kafka deployment failed. Rollback status: {{ helm_kafka_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
       changed_when: false

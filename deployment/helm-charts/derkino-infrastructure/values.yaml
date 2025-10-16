@@ -30,11 +30,11 @@ mongodb:
   # StatefulSet configuration
   statefulset:
     name: mongodb
-    replicas: {{ .Values.mongodb.replicas | default(1) }}
+    replicas: 1
     image:
-      repository: {{ .Values.mongodb.image.repository | default("mongo") }}
-      tag: {{ .Values.mongodb.image.tag | default("latest") }}
-    containerPort: {{ .Values.mongodb.service.port | default(27017) }}
+      repository: mongo
+      tag: latest
+    containerPort: 27017
     volumeMounts:
       data:
         name: mongodb-data
@@ -66,11 +66,11 @@ postgresql:
   # StatefulSet configuration
   statefulset:
     name: postgres
-    replicas: {{ .Values.postgresql.replicas | default(1) }}
+    replicas: 1
     image:
-      repository: {{ .Values.postgresql.image.repository | default("postgres") }}
-      tag: {{ .Values.postgresql.image.tag | default("latest") }}
-    containerPort: {{ .Values.postgresql.service.port | default(5432) }}
+      repository: postgres
+      tag: latest
+    containerPort: 5432
     volumeMounts:
       data:
         name: postgres-data
@@ -121,15 +121,15 @@ redisStack:
   # StatefulSet configuration
   statefulset:
     name: redis-stack
-    replicas: {{ .Values.redisStack.replicas | default(1) }}
+    replicas: 1
     image:
-      repository: {{ .Values.redisStack.image.repository | default("redis/redis-stack") }}
-      tag: {{ .Values.redisStack.image.tag | default("latest") }}
+      repository: redis/redis-stack
+      tag: latest
     containerPorts:
-      default: {{ .Values.redisStack.service.ports.default.port | default(6379) }}
-      http: {{ .Values.redisStack.service.ports.http.port | default(8001) }}
+      default: 6379
+      http: 8001
     env:
-      REDIS_DEFAULT_PASS: "{{ .Values.redisStack.secret.password }}"
+      REDIS_DEFAULT_PASS: ""
       REDIS_ARGS: "--requirepass $(REDIS_DEFAULT_PASS)"
 
 # Kafka configuration

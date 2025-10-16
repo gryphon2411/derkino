@@ -19,7 +19,7 @@
         - postgresql
         - redis-stack
         - kafka
-      when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
+      when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != ''"
       changed_when: false
 
   rescue:
@@ -99,5 +99,9 @@
     - postgresql
     - redis-stack
     - kafka
-  when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != '' and migration_patch_result is defined and migration_patch_result.rc == 0"
+  when: >
+    migration_existing_infrastructure is defined and
+    migration_existing_infrastructure.stdout != '' and
+    migration_patch_result is defined and
+    migration_patch_result.rc == 0
   changed_when: false

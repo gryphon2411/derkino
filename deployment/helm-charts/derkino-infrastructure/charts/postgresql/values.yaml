@@ -21,11 +21,11 @@ service:
 # StatefulSet configuration
 statefulset:
   name: postgres
-  replicas: {{ .Values.replicaCount | default(1) }}
+  replicas: 1
   image:
-    repository: {{ .Values.image.repository | default("postgres") }}
-    tag: {{ .Values.image.tag | default("latest") }}
-  containerPort: {{ .Values.service.port | default(5432) }}
+    repository: postgres
+    tag: latest
+  containerPort: 5432
   volumeMounts:
     data:
       name: postgres-data
