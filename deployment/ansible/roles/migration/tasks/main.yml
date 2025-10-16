@@ -58,7 +58,7 @@
     - { name: postgresql, test_command: "psql -U postgres -c 'SELECT 1;'" }
     - { name: redis-stack, test_command: "redis-cli ping" }
     - { name: kafka, test_command: "kafka-topics.sh --bootstrap-server localhost:9092 --list" }
-  when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
+  when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != ''"
   changed_when: false
 
 - name: Switch traffic to Helm infrastructure
@@ -70,7 +70,7 @@
         - postgresql
         - redis-stack
         - kafka
-      when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
+      when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != ''"
       changed_when: false
       register: migration_patch_result
 
@@ -99,5 +99,5 @@
     - postgresql
     - redis-stack
     - kafka
-  when: "existing_infrastructure is defined and existing_infrastructure.stdout != '' and migration_complete is defined and migration_complete.rc == 0"
+  when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != '' and migration_patch_result is defined and migration_patch_result.rc == 0"
   changed_when: false

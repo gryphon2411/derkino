@@ -26,13 +26,13 @@ service:
 # StatefulSet configuration
 statefulset:
   name: redis-stack
-  replicas: 1
+  replicas: {{ .Values.replicaCount | default(1) }}
   image:
-    repository: redis/redis-stack
-    tag: latest
+    repository: {{ .Values.image.repository | default("redis/redis-stack") }}
+    tag: {{ .Values.image.tag | default("latest") }}
   containerPorts:
-    default: 6379
-    http: 8001
+    default: {{ .Values.service.ports.default.port | default(6379) }}
+    http: {{ .Values.service.ports.http.port | default(8001) }}
   env:
     REDIS_DEFAULT_PASS: "{{ .Values.secret.password }}"
     REDIS_ARGS: "--requirepass $(REDIS_DEFAULT_PASS)"

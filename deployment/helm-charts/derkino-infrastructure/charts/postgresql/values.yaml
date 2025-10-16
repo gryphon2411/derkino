@@ -9,7 +9,9 @@ namespace:
   secret:
     name: postgres-root-user-credentials
     username: postgres
-    # Password provided via Kubernetes Secret# Service configuration
+    # Password provided via Kubernetes Secret
+
+# Service configuration
 service:
   name: postgres
   port: 5432
@@ -19,11 +21,11 @@ service:
 # StatefulSet configuration
 statefulset:
   name: postgres
-  replicas: 1
+  replicas: {{ .Values.replicaCount | default(1) }}
   image:
-    repository: postgres
-    tag: latest
-  containerPort: 5432
+    repository: {{ .Values.image.repository | default("postgres") }}
+    tag: {{ .Values.image.tag | default("latest") }}
+  containerPort: {{ .Values.service.port | default(5432) }}
   volumeMounts:
     data:
       name: postgres-data

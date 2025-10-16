@@ -6,11 +6,20 @@
   gather_facts: false
 
   vars_files:
-    - group_vars/all/vars.yml
+    # Explicitly load the correct variables file. This is now safe because
+    # Ansible is no longer auto-loading the encrypted file.
+    - "{{ lookup('first_found', params) }}"
+    # Load environment-specific variables
     - environments/{{ deployment_environment | default('local') }}.yml
 
   vars:
-    ansible_vault_password_file: .vault-password
+    # Define the files for the 'first_found' lookup.
+    # It will try test_vars.yml first, and if not found, will fall back to vars.yml.
+    params:
+      files:
+        - 'vars/all/test_vars.yml'        # Priority 1: For CI/CD test runs
+        - 'vars/all/vars.yml'             # Priority 2: For production deployments
+      skip: true # Prevents an error if no files are found (good practice)
 
   roles:
     - common

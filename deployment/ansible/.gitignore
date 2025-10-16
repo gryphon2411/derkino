@@ -23,6 +23,10 @@ __pycache__/
 local.yml
 local_vars.yml
 
+# Test files for CI/CD testing
+test-*.yml
+test-vault-password
+
 # Log files
 *.log
 

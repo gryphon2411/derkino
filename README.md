@@ -36,33 +36,76 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
    ```
 
 3. **Set up Ansible Vault (Security Critical)**:
+
+   Ansible Vault passwords should NEVER be committed to version control. Use one of these secure methods:
+
+   ## Option 1: Environment Variable
    ```bash
-   # IMPORTANT: NEVER commit vault password files to version control
-   # Create a secure vault password file for local environment (DO NOT COMMIT THIS FILE)
-   # echo "your_secure_local_password" > ~/.derkino-local-vault-password
+   export ANSIBLE_VAULT_PASSWORD="your_secure_password"
+   ```
+
+   ## Option 2: External Password File
+   ```bash
+   # Create a secure vault password file (DO NOT COMMIT THIS FILE)
+   echo "your_secure_local_password" > ~/.derkino-local-vault-password
+   chmod 600 ~/.derkino-local-vault-password
+   ```
+
+   ## Option 3: Prompt for Password
+   ```bash
+   # Will prompt interactively for vault password
+   ```
+
+   ## Creating Secrets File
    
-   # Create a secure vault password file for dev environment (DO NOT COMMIT THIS FILE)
-   # echo "your_secure_dev_password" > ~/.derkino-dev-vault-password
+   Create your secrets file based on the template:
+   ```bash
+   # Copy the template
+   cp deployment/secrets/secrets-template.yml deployment/secrets/local/secrets.yml
+   
+   # Edit with your actual passwords
+   nano deployment/secrets/local/secrets.yml
+   
+   # Encrypt the file
+   ansible-vault encrypt deployment/secrets/local/secrets.yml
    ```
 
 4. **Deploy to local environment**:
    ```bash
    # Deploy using Ansible with local environment
-   # IMPORTANT: Replace ~/.derkino-local-vault-password with the path to your local vault password file
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-id local@~/.derkino-local-vault-password
+   # Choose one of these secure vault password methods:
+   
+   # Option 1: Environment variable
+   export ANSIBLE_VAULT_PASSWORD="your_secure_local_password"
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local"
+   
+   # Option 2: External password file
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-password-file ~/.derkino-local-vault-password
+   
+   # Option 3: Prompt for password
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --ask-vault-pass
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-id local@~/.derkino-local-vault-password --check
+   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-password-file ~/.derkino-local-vault-password --check
    ```
 
 5. **Deploy to dev environment**:
    ```bash
    # Deploy using Ansible with dev environment
-   # IMPORTANT: Replace ~/.derkino-dev-vault-password with the path to your dev vault password file
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-id dev@~/.derkino-dev-vault-password
+   # Choose one of these secure vault password methods:
+   
+   # Option 1: Environment variable
+   export ANSIBLE_VAULT_PASSWORD="your_secure_dev_password"
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev"
+   
+   # Option 2: External password file
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password
+   
+   # Option 3: Prompt for password
+   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --ask-vault-pass
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-id dev@~/.derkino-dev-vault-password --check
+   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password --check
    ```
 
 ### How It Works

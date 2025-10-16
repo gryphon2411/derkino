@@ -1,7 +1,7 @@
 # Default variables for Migration role
 
-# Namespace for infrastructure components
-migration_infrastructure_namespace: "infrastructure"
+# Namespace for infrastructure components (use helm namespace for consistency)
+migration_infrastructure_namespace: "{{ helm_infrastructure_namespace | default('infrastructure') }}"
 
 # Namespace for parallel deployment
 migration_parallel_namespace: "infrastructure-parallel"

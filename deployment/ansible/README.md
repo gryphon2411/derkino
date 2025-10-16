@@ -39,11 +39,19 @@ pip install <package-name>
 ```bash
 source .venv/bin/activate
 
-# Run playbook with local inventory
+# Run playbook with local inventory (using secure vault password)
+# Option 1: Environment variable
+export ANSIBLE_VAULT_PASSWORD="your_secure_password"
 ansible-playbook -i inventory/local deploy.yml
 
+# Option 2: External password file
+ansible-playbook -i inventory/local deploy.yml --vault-password-file ~/.derkino-vault-password
+
+# Option 3: Prompt for password
+ansible-playbook -i inventory/local deploy.yml --ask-vault-pass
+
 # Run with migration enabled
-ansible-playbook -i inventory/local deploy.yml -e "migration_enabled=true"
+ansible-playbook -i inventory/local deploy.yml -e "migration_enabled=true" --vault-password-file ~/.derkino-vault-password
 ```
 
 ## Environment Configuration
