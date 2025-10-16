@@ -17,41 +17,97 @@
   changed_when: false
 
 - name: Deploy MongoDB via Helm
-  ansible.builtin.command: >
-    helm upgrade --install mongodb derkino-infrastructure/mongodb
-    --namespace {{ helm_infrastructure_namespace }} --create-namespace
-    --values {{ helm_charts_path }}/charts/mongodb/values.yaml
-  notify:
-    - wait for mongodb
-    - test mongodb connectivity
-  changed_when: false
+  block:
+    - name: Install/Upgrade MongoDB
+      ansible.builtin.command: >
+        helm upgrade --install mongodb derkino-infrastructure/mongodb
+        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --values {{ helm_charts_path }}/charts/mongodb/values.yaml
+      notify:
+        - wait for mongodb
+        - test mongodb connectivity
+      changed_when: false
+
+  rescue:
+    - name: Rollback MongoDB deployment
+      ansible.builtin.command: >
+        helm uninstall mongodb --namespace {{ helm_infrastructure_namespace }}
+      changed_when: false
+      failed_when: false
+
+    - name: Notify MongoDB rollback
+      ansible.builtin.debug:
+        msg: "MongoDB deployment failed and was rolled back"
+      changed_when: false
 
 - name: Deploy PostgreSQL via Helm
-  ansible.builtin.command: >
-    helm upgrade --install postgresql derkino-infrastructure/postgresql
-    --namespace {{ helm_infrastructure_namespace }} --create-namespace
-    --values {{ helm_charts_path }}/charts/postgresql/values.yaml
-  notify:
-    - wait for postgresql
-    - test postgresql connectivity
-  changed_when: false
+  block:
+    - name: Install/Upgrade PostgreSQL
+      ansible.builtin.command: >
+        helm upgrade --install postgresql derkino-infrastructure/postgresql
+        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --values {{ helm_charts_path }}/charts/postgresql/values.yaml
+      notify:
+        - wait for postgresql
+        - test postgresql connectivity
+      changed_when: false
+
+  rescue:
+    - name: Rollback PostgreSQL deployment
+      ansible.builtin.command: >
+        helm uninstall postgresql --namespace {{ helm_infrastructure_namespace }}
+      changed_when: false
+      failed_when: false
+
+    - name: Notify PostgreSQL rollback
+      ansible.builtin.debug:
+        msg: "PostgreSQL deployment failed and was rolled back"
+      changed_when: false
 
 - name: Deploy Redis-Stack via Helm
-  ansible.builtin.command: >
-    helm upgrade --install redis-stack derkino-infrastructure/redis-stack
-    --namespace {{ helm_infrastructure_namespace }} --create-namespace
-    --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
-  notify:
-    - wait for redis-stack
-    - test redis connectivity
-  changed_when: false
+  block:
+    - name: Install/Upgrade Redis-Stack
+      ansible.builtin.command: >
+        helm upgrade --install redis-stack derkino-infrastructure/redis-stack
+        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
+      notify:
+        - wait for redis-stack
+        - test redis connectivity
+      changed_when: false
+
+  rescue:
+    - name: Rollback Redis-Stack deployment
+      ansible.builtin.command: >
+        helm uninstall redis-stack --namespace {{ helm_infrastructure_namespace }}
+      changed_when: false
+      failed_when: false
+
+    - name: Notify Redis-Stack rollback
+      ansible.builtin.debug:
+        msg: "Redis-Stack deployment failed and was rolled back"
+      changed_when: false
 
 - name: Deploy Kafka via Helm
-  ansible.builtin.command: >
-    helm upgrade --install kafka derkino-infrastructure/kafka
-    --namespace {{ helm_infrastructure_namespace }} --create-namespace
-    --values {{ helm_charts_path }}/charts/kafka/values.yaml
-  notify:
-    - wait for kafka
-    - test kafka connectivity
-  changed_when: false
+  block:
+    - name: Install/Upgrade Kafka
+      ansible.builtin.command: >
+        helm upgrade --install kafka derkino-infrastructure/kafka
+        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --values {{ helm_charts_path }}/charts/kafka/values.yaml
+      notify:
+        - wait for kafka
+        - test kafka connectivity
+      changed_when: false
+
+  rescue:
+    - name: Rollback Kafka deployment
+      ansible.builtin.command: >
+        helm uninstall kafka --namespace {{ helm_infrastructure_namespace }}
+      changed_when: false
+      failed_when: false
+
+    - name: Notify Kafka rollback
+      ansible.builtin.debug:
+        msg: "Kafka deployment failed and was rolled back"
+      changed_when: false

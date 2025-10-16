@@ -1,2 +1,2 @@
-[derkino]
+[local]
 localhost ansible_connection=local

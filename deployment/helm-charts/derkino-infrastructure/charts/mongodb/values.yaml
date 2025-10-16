@@ -5,13 +5,11 @@ namespace:
   create: true
   name: mongodb-system
 
-# Secret configuration
-secret:
-  name: mongodb-root-user-credentials
-  username: root
-  password: X6d9r2SgJ8xQgpGL
-
-# Service configuration
+  # Secret configuration
+  secret:
+    name: mongodb-root-user-credentials
+    username: root
+    # Password provided via Kubernetes Secret# Service configuration
 service:
   name: mongodb
   port: 27017

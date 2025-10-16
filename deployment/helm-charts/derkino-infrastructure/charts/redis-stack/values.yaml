@@ -9,7 +9,7 @@ namespace:
 secret:
   name: redis-stack-default-user-credentials
   username: default
-  password: pu9oq47y7Pgso3RRZLC
+  # Password provided via Kubernetes Secret
 
 # Service configuration
 service:

@@ -2,17 +2,20 @@
 
 ---
 - name: Deploy Derkino Application
-  hosts: localhost
+  hosts: local
   gather_facts: false
 
   vars_files:
     - group_vars/all/vars.yml
-    - environments/{{ deployment_environment }}.yml
+    - environments/{{ deployment_environment | default('local') }}.yml
+
+  vars:
+    ansible_vault_password_file: .vault-password
 
   roles:
     - common
     - kubernetes
+    - secrets
     - { role: helm, when: "migration_enabled is not defined or migration_enabled == false" }
     - { role: migration, when: "migration_enabled is defined and migration_enabled == true" }
-    - secrets
     - ingress

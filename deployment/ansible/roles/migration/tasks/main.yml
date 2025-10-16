@@ -8,17 +8,36 @@
   changed_when: false
 
 - name: Deploy Helm infrastructure in parallel (if kubectl infrastructure exists)
-  ansible.builtin.command: >
-    helm upgrade --install {{ item }} derkino-infrastructure/{{ item }}
-    --namespace {{ migration_parallel_namespace }} --create-namespace
-    --values {{ migration_helm_charts_path }}/charts/{{ item }}/values.yaml
-  with_items:
-    - mongodb
-    - postgresql
-    - redis-stack
-    - kafka
-  when: migration_existing_infrastructure.stdout != ""
-  changed_when: false
+  block:
+    - name: Install/Upgrade parallel infrastructure
+      ansible.builtin.command: >
+        helm upgrade --install {{ item }} derkino-infrastructure/{{ item }}
+        --namespace infrastructure-parallel --create-namespace
+        --values {{ helm_charts_path }}/charts/{{ item }}/values.yaml
+      with_items:
+        - mongodb
+        - postgresql
+        - redis-stack
+        - kafka
+      when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
+      changed_when: false
+
+  rescue:
+    - name: Rollback parallel infrastructure
+      ansible.builtin.command: >
+        helm uninstall {{ item }} --namespace infrastructure-parallel
+      with_items:
+        - mongodb
+        - postgresql
+        - redis-stack
+        - kafka
+      changed_when: false
+      failed_when: false
+
+    - name: Notify parallel infrastructure rollback
+      ansible.builtin.debug:
+        msg: "Parallel infrastructure deployment failed and was rolled back"
+      changed_when: false
 
 - name: Wait for parallel infrastructure to be ready
   ansible.builtin.command: kubectl wait --for=condition=ready pod -l app={{ item }} --namespace {{ migration_parallel_namespace }} --timeout=300s
@@ -43,14 +62,35 @@
   changed_when: false
 
 - name: Switch traffic to Helm infrastructure
-  ansible.builtin.command: kubectl patch service {{ item }} -n infrastructure --patch-file {{ migration_patches_path }}/{{ item }}-patch.yaml
-  with_items:
-    - mongodb
-    - postgresql
-    - redis-stack
-    - kafka
-  when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
-  changed_when: false
+  block:
+    - name: Patch service selectors
+      ansible.builtin.command: kubectl patch service {{ item }} -n infrastructure --patch-file {{ migration_patches_path }}/{{ item }}-patch.yaml
+      with_items:
+        - mongodb
+        - postgresql
+        - redis-stack
+        - kafka
+      when: "existing_infrastructure is defined and existing_infrastructure.stdout != ''"
+      changed_when: false
+      register: migration_patch_result
+
+  rescue:
+    - name: Rollback traffic switch
+      ansible.builtin.command: >
+        kubectl patch service {{ item }} -n infrastructure
+        --patch-file {{ migration_patches_path }}/{{ item }}-rollback-patch.yaml
+      with_items:
+        - mongodb
+        - postgresql
+        - redis-stack
+        - kafka
+      changed_when: false
+      failed_when: false
+
+    - name: Notify traffic switch rollback
+      ansible.builtin.debug:
+        msg: "Traffic switch failed and was rolled back"
+      changed_when: false
 
 - name: Remove kubectl infrastructure (after successful migration)
   ansible.builtin.command: kubectl delete -f {{ kubectl_manifests_path }}/{{ item }}.yaml
