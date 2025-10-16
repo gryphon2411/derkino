@@ -2,11 +2,11 @@ name: Validate Helm Infrastructure
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ master ]
     paths:
       - 'deployment/helm-charts/**'
   pull_request:
-    branches: [ master, main ]
+    branches: [ master ]
     paths:
       - 'deployment/helm-charts/**'
 
@@ -37,4 +37,4 @@ jobs:
     - name: Template Helm chart for validation
       # This is the most powerful check. It ensures all templates can be
       # rendered into valid Kubernetes YAML without deploying anything.
-      run: helm template --debug deployment/helm-charts/derkino-infrastructure
+      run: helm template --debug deployment/helm-charts/derkino-infrastructure > rendered-manifests.yaml
