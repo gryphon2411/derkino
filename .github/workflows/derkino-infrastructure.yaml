@@ -54,8 +54,8 @@ jobs:
 
       - name: Validate Ansible Playbooks
         uses: ansible/ansible-lint@v25.9.2
-        env:
-          ANSIBLE_ROLES_PATH: "deployment/ansible/roles"
+        with:
+          working_directory: "deployment/ansible"
 
       - name: Validate Helm Templates
         run: |
