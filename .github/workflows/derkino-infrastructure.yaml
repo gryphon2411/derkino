@@ -31,7 +31,7 @@ jobs:
           python-version: '3.11' # Using a more current Python version
 
       - name: Install Python Dependencies
-        run: pip install yamllint ansible
+        run: pip install yamllint
 
       - name: Lint YAML Files
         run: yamllint .
