@@ -21,7 +21,7 @@
     - name: Install/Upgrade MongoDB
       ansible.builtin.command: >
         helm upgrade --install mongodb derkino-infrastructure/mongodb
-        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --namespace {{ helm_infrastructure_namespace }}
         --values {{ helm_charts_path }}/charts/mongodb/values.yaml
       notify:
         - wait for mongodb
@@ -46,7 +46,7 @@
     - name: Install/Upgrade PostgreSQL
       ansible.builtin.command: >
         helm upgrade --install postgresql derkino-infrastructure/postgresql
-        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --namespace {{ helm_infrastructure_namespace }}
         --values {{ helm_charts_path }}/charts/postgresql/values.yaml
       notify:
         - wait for postgresql
@@ -71,7 +71,7 @@
     - name: Install/Upgrade Redis-Stack
       ansible.builtin.command: >
         helm upgrade --install redis-stack derkino-infrastructure/redis-stack
-        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --namespace {{ helm_infrastructure_namespace }}
         --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
       notify:
         - wait for redis-stack
@@ -96,7 +96,7 @@
     - name: Install/Upgrade Kafka
       ansible.builtin.command: >
         helm upgrade --install kafka derkino-infrastructure/kafka
-        --namespace {{ helm_infrastructure_namespace }} --create-namespace
+        --namespace {{ helm_infrastructure_namespace }}
         --values {{ helm_charts_path }}/charts/kafka/values.yaml
       notify:
         - wait for kafka

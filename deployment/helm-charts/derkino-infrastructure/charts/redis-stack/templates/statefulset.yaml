@@ -32,3 +32,10 @@ spec:
             secretKeyRef:
               name: {{ .Values.secret.name }}
               key: password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "125m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"

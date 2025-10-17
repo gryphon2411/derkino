@@ -28,16 +28,23 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.namespace.secret.name }}
+              name: {{ .Values.secret.name }}
               key: username
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.namespace.secret.name }}
+              name: {{ .Values.secret.name }}
               key: password
         volumeMounts:
         - name: {{ .Values.statefulset.volumeMounts.data.name }}
           mountPath: {{ .Values.statefulset.volumeMounts.data.mountPath }}
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
   volumeClaimTemplates:
   - metadata:
       name: {{ .Values.statefulset.volumeClaimTemplates.data.name }}

@@ -39,3 +39,12 @@ defaultInitContainers:
   autoDiscovery:
     image:
       repository: bitnamilegacy/kubectl
+
+# Resource configuration for Kafka brokers
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"

@@ -9,6 +9,14 @@ rules:
   trailing-spaces: disable
   new-line-at-end-of-file: disable
   truthy: disable
+  # Ansible-lint required rules
+  comments:
+    min-spaces-from-content: 1
+  braces:
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
 
 # --- IMPORTANT PART ---
 # Only lint the deployment directory and ignore Helm template files

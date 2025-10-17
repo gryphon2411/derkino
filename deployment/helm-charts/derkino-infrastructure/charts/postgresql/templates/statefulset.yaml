@@ -43,6 +43,13 @@ spec:
         - name: {{ .Values.statefulset.volumeMounts.initdb.name }}
           mountPath: {{ .Values.statefulset.volumeMounts.initdb.mountPath }}
           subPath: {{ .Values.statefulset.volumeMounts.initdb.subPath }}
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
       volumes:
       - name: {{ .Values.statefulset.volumeMounts.initdb.name }}
         configMap:

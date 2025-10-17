@@ -5,11 +5,13 @@ namespace:
   create: true
   name: mongodb-system
 
-  # Secret configuration
-  secret:
-    name: mongodb-root-user-credentials
-    username: root
-    # Password provided via Kubernetes Secret
+# Secret configuration
+# Use existing secret created by Ansible instead of creating new one
+secret:
+  name: mongodb-root-user-credentials
+  username: root
+  # Password provided via existing Kubernetes Secret
+  useExistingSecret: true
 
 # Service configuration
 service:
