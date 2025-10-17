@@ -34,7 +34,7 @@ jobs:
         run: pip install yamllint
 
       - name: Lint YAML Files
-        run: yamllint .
+        run: yamllint deployment/ -c deployment/ansible/.yamllint
 
       - name: Set up Helm
         uses: azure/setup-helm@v4

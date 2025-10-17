@@ -54,10 +54,10 @@
     kubectl exec deployment/{{ item }} -n {{ migration_parallel_namespace }}
     -- {{ item.test_command }}
   with_items:
-    - { name: mongodb, test_command: "mongosh --eval 'db.adminCommand({ping: 1})'" }
-    - { name: postgresql, test_command: "psql -U postgres -c 'SELECT 1;'" }
-    - { name: redis-stack, test_command: "redis-cli ping" }
-    - { name: kafka, test_command: "kafka-topics.sh --bootstrap-server localhost:9092 --list" }
+    - {name: mongodb, test_command: "mongosh --eval 'db.adminCommand({ping: 1})'"}
+    - {name: postgresql, test_command: "psql -U postgres -c 'SELECT 1;'"}
+    - {name: redis-stack, test_command: "redis-cli ping"}
+    - {name: kafka, test_command: "kafka-topics.sh --bootstrap-server localhost:9092 --list"}
   when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != ''"
   changed_when: false
 

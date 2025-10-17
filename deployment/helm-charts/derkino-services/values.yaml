@@ -39,12 +39,12 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+# capabilities:
+#   drop:
+#   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
@@ -83,18 +83,18 @@ httpRoute:
   annotations: {}
   # Which Gateways this Route is attached to.
   parentRefs:
-  - name: gateway
-    sectionName: http
-    # namespace: default
+    - name: gateway
+      sectionName: http
+      # namespace: default
   # Hostnames matching HTTP header.
   hostnames:
-  - chart-example.local
+    - chart-example.local
   # List of rules and filters applied.
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /headers
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /headers
   #   filters:
   #   - type: RequestHeaderModifier
   #     requestHeaderModifier:

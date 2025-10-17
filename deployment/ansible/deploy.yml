@@ -19,12 +19,12 @@
       files:
         - 'vars/all/test_vars.yml'        # Priority 1: For CI/CD test runs
         - 'vars/all/vars.yml'             # Priority 2: For production deployments
-      skip: true # Prevents an error if no files are found (good practice)
+      skip: true  # Prevents an error if no files are found (good practice)
 
   roles:
     - common
     - kubernetes
     - secrets
-    - { role: helm, when: "migration_enabled is not defined or migration_enabled == false" }
-    - { role: migration, when: "migration_enabled is defined and migration_enabled == true" }
+    - {role: helm, when: "migration_enabled is not defined or migration_enabled == false"}
+    - {role: migration, when: "migration_enabled is defined and migration_enabled == true"}
     - ingress
