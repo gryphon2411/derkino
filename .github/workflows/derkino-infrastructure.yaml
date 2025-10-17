@@ -22,57 +22,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Using a more current Python version
+
+      - name: Install Python Dependencies
+        run: pip install yamllint ansible
+
+      - name: Lint YAML Files
+        run: yamllint .
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
           version: 'v3.14.0'
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install Linters
-        run: |
-          pip install ansible-lint yamllint
-
-      - name: Add Helm Repositories
+      - name: Set up Helm Repositories
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-
-      - name: Build Helm Dependencies
-        run: |
           helm dependency build deployment/helm-charts/derkino-infrastructure/
 
       - name: Lint Helm Charts
         run: |
-          echo "=== Helm Lint Validation ==="
-          # Only lint top-level charts. --with-subcharts handles the rest.
-          helm lint --with-subcharts \
-            deployment/helm-charts/derkino-infrastructure/
+          helm lint --with-subcharts deployment/helm-charts/derkino-infrastructure/
           helm lint deployment/helm-charts/derkino-services/
           helm lint deployment/helm-charts/derkino-ui/
 
       - name: Validate Ansible Playbooks
-        run: |
-          echo "=== Ansible Lint Validation ==="
-          ansible-lint deployment/ansible/deploy.yml
+        uses: ansible/ansible-lint@v25.9.2
+        env:
+          ANSIBLE_ROLES_PATH: "deployment/ansible/roles"
 
       - name: Validate Helm Templates
         run: |
-          echo "=== Helm Template Validation ==="
-          # Templating the umbrella chart is the most effective test.
-          helm template test-infra \
-            deployment/helm-charts/derkino-infrastructure/ > /dev/null
-          helm template test-services \
-            deployment/helm-charts/derkino-services/ > /dev/null
-          helm template test-ui \
-            deployment/helm-charts/derkino-ui/ > /dev/null
-
-      - name: Validate YAML Files
-        run: |
-          echo "=== YAML Lint Validation ==="
-          yamllint .
+          # The "helm template" command is a great smoke test for chart syntax
+          helm template test-infra deployment/helm-charts/derkino-infrastructure/ > /dev/null
+          helm template test-services deployment/helm-charts/derkino-services/ > /dev/null
+          helm template test-ui deployment/helm-charts/derkino-ui/ > /dev/null
