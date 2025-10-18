@@ -1,0 +1,5 @@
+# Environment-specific variables for dev deployment
+
+environment: dev
+api_host_url: "http://dev.derkino.com"
+kubernetes_context: "dev-cluster"
