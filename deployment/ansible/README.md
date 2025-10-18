@@ -174,10 +174,10 @@ ansible-vault create deployment/secrets/local/secrets.yml
 ```bash
 # Set secrets as environment variables
 export ANSIBLE_VAULT_PASSWORD="your_vault_password"
-export vault_mongodb_root_password="your_mongodb_password"
-export vault_postgres_root_password="your_postgres_password"
-export vault_redis_default_password="your_redis_password"
-export vault_kafka_sasl_password="your_kafka_password"
+export secrets_vault_mongodb_root_password="your_mongodb_password"
+export secrets_vault_postgres_root_password="your_postgres_password"
+export secrets_vault_redis_default_password="your_redis_password"
+export secrets_vault_kafka_sasl_password="your_kafka_password"
 
 # Run playbook with environment variables
 ansible-playbook -i inventory/local deploy.yml

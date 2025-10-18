@@ -36,17 +36,19 @@ jobs:
       - name: Scan for Secrets with TruffleHog
         uses: trufflesecurity/trufflehog@v3.90.11
         with:
-          # Scan the entire repository filesystem git history.
+          # Scan the entire repository filesystem. TruffleHog is smart
+          # enough to scan the git history within this path.
           path: ./
 
-          # Scans only the changes pull requests changes.
+          # For pull requests, this efficiently scans only the changes.
           # These inputs are ignored on 'push' events, so it's safe to include.
           base: ${{ github.event.pull_request.base.sha }}
           head: ${{ github.event.pull_request.head.sha }}
           
           # Pass extra CLI arguments. This is the most important part.
           # --only-verified: Reduces false positives by checking if secrets are active.
-          extra_args: --only-verified
+          # --fail: Ensures the workflow fails if a verified secret is found.
+          extra_args: --only-verified --fail
 
       - name: Lint YAML Files
         run: yamllint deployment/ -c deployment/ansible/.yamllint
