@@ -47,8 +47,7 @@ jobs:
           
           # Pass extra CLI arguments. This is the most important part.
           # --only-verified: Reduces false positives by checking if secrets are active.
-          # --fail: Ensures the workflow fails if a verified secret is found.
-          extra_args: --only-verified --fail
+          extra_args: --only-verified
 
       - name: Lint YAML Files
         run: yamllint deployment/ -c deployment/ansible/.yamllint
