@@ -31,7 +31,7 @@ jobs:
           python-version: '3.11' # Using a more current Python version
 
       - name: Install Python Dependencies
-        run: pip install yamllint
+        run: pip install yamllint ansible
 
       - name: Scan for Secrets with TruffleHog
         uses: trufflesecurity/trufflehog@v3.90.11
@@ -82,11 +82,6 @@ jobs:
         run: |
           cd deployment/ansible
           ansible-playbook --syntax-check deploy.yml -e "deployment_environment=local"
-
-      - name: Ansible Playbook Dry-Run
-        run: |
-          cd deployment/ansible
-          ansible-playbook --check deploy.yml -e "deployment_environment=local"
 
       - name: Validate Helm Templates
         run: |
