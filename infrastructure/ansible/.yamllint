@@ -22,7 +22,7 @@ rules:
 # Only lint the deployment directory and ignore Helm template files
 ignore: |
   **
-  !deployment/**
+  !infrastructure/**
   !.github/workflows/**
   **/templates/**
   **/crds/**

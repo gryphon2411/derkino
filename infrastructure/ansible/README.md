@@ -12,7 +12,7 @@ system Python conflicts.
 
 ```bash
 # Navigate to this directory
-cd /home/eido/code/derkino/deployment/ansible
+cd /home/eido/code/derkino/infrastructure/ansible
 
 # Activate the virtual environment
 source .venv/bin/activate
@@ -86,7 +86,7 @@ Inventory files define target hosts for deployment:
 ## Directory Structure
 
 ```
-deployment/ansible/
+infrastructure/ansible/
 ├── deploy.yml              # Main deployment playbook
 ├── environments/           # Environment-specific variables
 ├── group_vars/            # Global variables
@@ -164,10 +164,10 @@ This project uses Ansible Vault for secure secret management. Secrets are loaded
 **For encrypted secrets files:**
 ```bash
 # Edit encrypted secrets file
-ansible-vault edit deployment/secrets/local/secrets.yml
+ansible-vault edit infrastructure/secrets/local/secrets.yml
 
 # Create new encrypted secrets file
-ansible-vault create deployment/secrets/local/secrets.yml
+ansible-vault create infrastructure/secrets/local/secrets.yml
 ```
 
 **For environment variable approach (recommended):**
@@ -249,7 +249,7 @@ Manages Kubernetes secrets using Ansible Vault for secure secret storage.
 ```bash
 # Add repository manually if needed
 helm repo add derkino-infrastructure 
-deployment/helm-charts/derkino-infrastructure
+infrastructure/helm-charts/derkino-infrastructure
 helm repo update derkino-infrastructure
 ```
 

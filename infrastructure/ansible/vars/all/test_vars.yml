@@ -34,14 +34,14 @@ secrets_namespace: "infrastructure"
 migration_parallel_namespace: "infrastructure-parallel"
 
 # Path variables
-helm_charts_path: "/home/eido/code/derkino/deployment/helm-charts/derkino-infrastructure"
-migration_helm_charts_path: "/home/eido/code/derkino/deployment/helm-charts/derkino-infrastructure"
+helm_charts_path: "/home/eido/code/derkino/infrastructure/helm-charts/derkino-infrastructure"
+migration_helm_charts_path: "/home/eido/code/derkino/infrastructure/helm-charts/derkino-infrastructure"
 migration_kubectl_manifests_path: "/home/eido/code/derkino/orchestrators/k8s"
-migration_patches_path: "/home/eido/code/derkino/deployment/ansible/roles/migration/files/patches"
+migration_patches_path: "/home/eido/code/derkino/infrastructure/ansible/roles/migration/files/patches"
 helm_cache_dir: "/home/eido/.cache/helm"
 
 # Secrets file path
-secrets_file: "/home/eido/code/derkino/deployment/ansible/secrets/local/secrets.yml"
+secrets_file: "/home/eido/code/derkino/infrastructure/ansible/secrets/local/secrets.yml"
 
 # Migration control
 migration_enabled: false

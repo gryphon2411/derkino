@@ -7,7 +7,7 @@
 
 - name: Test MongoDB connectivity
   ansible.builtin.command: >
-    kubectl exec deployment/mongodb -n {{ helm_infrastructure_namespace }}
+    kubectl exec infrastructure/mongodb -n {{ helm_infrastructure_namespace }}
     -- mongosh --eval "db.adminCommand({ping: 1})"
   changed_when: false
 
@@ -27,7 +27,7 @@
 
 - name: Test Redis connectivity
   ansible.builtin.command: >
-    kubectl exec deployment/redis-stack -n {{ helm_infrastructure_namespace }}
+    kubectl exec infrastructure/redis-stack -n {{ helm_infrastructure_namespace }}
     -- redis-cli ping
   changed_when: false
 

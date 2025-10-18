@@ -7,14 +7,14 @@ on:
       - main
       - master
     paths:
-      - 'deployment/**'
+      - 'infrastructure/**'
       - '.github/workflows/derkino-infrastructure.yaml'
   pull_request:
     branches:
       - main
       - master
     paths:
-      - 'deployment/**'
+      - 'infrastructure/**'
       - '.github/workflows/derkino-infrastructure.yaml'
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
       - name: Lint YAML Files
         run: |
           pip install yamllint
-          yamllint deployment/ -c deployment/ansible/.yamllint
+          yamllint infrastructure/ -c infrastructure/ansible/.yamllint
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
@@ -51,34 +51,34 @@ jobs:
       - name: Set up Helm Repositories
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm dependency build deployment/helm-charts/derkino-infrastructure/
+          helm dependency build infrastructure/helm-charts/derkino-infrastructure/
 
       - name: Verify Chart.lock is Current
         run: |
           # Fail if Chart.lock was modified by dependency build
-          git diff --exit-code deployment/helm-charts/derkino-infrastructure/Chart.lock
+          git diff --exit-code infrastructure/helm-charts/derkino-infrastructure/Chart.lock
 
       - name: Lint Helm Charts
         run: |
-          helm lint --with-subcharts deployment/helm-charts/derkino-infrastructure/
-          helm lint deployment/helm-charts/derkino-services/
-          helm lint deployment/helm-charts/derkino-ui/
+          helm lint --with-subcharts infrastructure/helm-charts/derkino-infrastructure/
+          helm lint infrastructure/helm-charts/derkino-services/
+          helm lint infrastructure/helm-charts/derkino-ui/
 
       - name: Validate Helm Templates
         run: |
           # The "helm template" command is a great smoke test for chart syntax
-          helm template test-infra deployment/helm-charts/derkino-infrastructure/ > /dev/null
-          helm template test-services deployment/helm-charts/derkino-services/ > /dev/null
-          helm template test-ui deployment/helm-charts/derkino-ui/ > /dev/null
+          helm template test-infra infrastructure/helm-charts/derkino-infrastructure/ > /dev/null
+          helm template test-services infrastructure/helm-charts/derkino-services/ > /dev/null
+          helm template test-ui infrastructure/helm-charts/derkino-ui/ > /dev/null
 
       - name: Validate Ansible Playbooks
         uses: ansible/ansible-lint@v25.9.2
         with:
-          working_directory: "deployment/ansible"
+          working_directory: "infrastructure/ansible"
 
       - name: Ansible Playbook Syntax Check
         run: |
           pip install ansible
-          ansible-galaxy collection install -r deployment/ansible/collections/requirements.yml
-          cd deployment/ansible
+          ansible-galaxy collection install -r infrastructure/ansible/collections/requirements.yml
+          cd infrastructure/ansible
           ansible-playbook --syntax-check deploy.yml -e "deployment_environment=local"

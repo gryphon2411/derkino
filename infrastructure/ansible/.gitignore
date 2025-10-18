@@ -20,7 +20,6 @@ __pycache__/
 .idea/
 
 # Local configuration files
-local.yml
 local_vars.yml
 
 # Test files for CI/CD testing

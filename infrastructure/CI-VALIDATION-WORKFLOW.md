@@ -5,7 +5,7 @@
 ### Local Development
 ```bash
 # 1. Update dependencies (when changing Chart.yaml)
-cd deployment/helm-charts/derkino-infrastructure
+cd infrastructure/helm-charts/derkino-infrastructure
 helm dependency update .
 
 # 2. Validate changes
@@ -19,7 +19,7 @@ git commit -m "feat(infra): Update dependencies"
 ### CI Validation Pipeline (Automated)
 ```bash
 # 1. Checkout code (automated)
-cd deployment/helm-charts/derkino-infrastructure
+cd infrastructure/helm-charts/derkino-infrastructure
 
 # 2. Build dependencies from lock file
 helm dependency build .  # Uses Chart.lock for reproducibility

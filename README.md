@@ -68,19 +68,19 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
    Create your secrets file based on the template:
    ```bash
    # Copy the template
-   cp deployment/secrets/secrets-template.yml deployment/secrets/local/secrets.yml
+   cp infrastructure/secrets/secrets-template.yml infrastructure/secrets/local/secrets.yml
    
    # Edit with your actual passwords
-   nano deployment/secrets/local/secrets.yml
+   nano infrastructure/secrets/local/secrets.yml
    
    # Encrypt the file
-   ansible-vault encrypt deployment/secrets/local/secrets.yml
+   ansible-vault encrypt infrastructure/secrets/local/secrets.yml
    ```
 
 4. **Deploy to local environment**:
    ```bash
    # Activate the Python virtual environment first
-   cd deployment/ansible
+   cd infrastructure/ansible
    source .venv/bin/activate
    
    # Deploy using Ansible with local environment
@@ -107,33 +107,33 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
    
    # Option 1: Environment variable
    export ANSIBLE_VAULT_PASSWORD="your_secure_dev_password"
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev"
+   ansible-playbook infrastructure/ansible/deploy.yml -i infrastructure/ansible/inventory/dev -e "environment=dev"
    
    # Option 2: External password file
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password
+   ansible-playbook infrastructure/ansible/deploy.yml -i infrastructure/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password
    
    # Option 3: Prompt for password
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --ask-vault-pass
+   ansible-playbook infrastructure/ansible/deploy.yml -i infrastructure/ansible/inventory/dev -e "environment=dev" --ask-vault-pass
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password --check
+   # ansible-playbook infrastructure/ansible/deploy.yml -i infrastructure/ansible/inventory/dev -e "environment=dev" --vault-password-file ~/.derkino-dev-vault-password --check
    ```
 
 ### How It Works
 
-- **Helm Charts**: Kubernetes resources are templated using Helm charts in `deployment/helm-charts/`
+- **Helm Charts**: Kubernetes resources are templated using Helm charts in `infrastructure/helm-charts/`
   - `derkino-infrastructure/`: For databases, messaging, and monitoring
   - `derkino-services/`: For backend microservices
   - `derkino-ui/`: For the frontend application
 
-- **Ansible Orchestration**: The `deployment/ansible/deploy.yml` playbook coordinates the deployment:
+- **Ansible Orchestration**: The `infrastructure/ansible/deploy.yml` playbook coordinates the deployment:
   - Loads environment-specific variables from `ansible/environments/`
   - Uses Ansible Vault for secure secret management (vault passwords must be stored locally and never committed)
   - Manages the deployment of Helm charts in the correct order
 
 - **Environment Configuration**:
-  - `deployment/ansible/environments/local.yml`: `api_host_url: "http://local.derkino.com"`, `kubernetes_context: "minikube"`
-  - `deployment/ansible/environments/dev.yml`: `api_host_url: "http://dev.derkino.com"`, `kubernetes_context: "dev-cluster"`
+  - `infrastructure/ansible/environments/local.yml`: `api_host_url: "http://local.derkino.com"`, `kubernetes_context: "minikube"`
+  - `infrastructure/ansible/environments/dev.yml`: `api_host_url: "http://dev.derkino.com"`, `kubernetes_context: "dev-cluster"`
 
 ### Accessing the Application
 

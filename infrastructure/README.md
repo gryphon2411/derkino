@@ -17,7 +17,7 @@ cd derkino
 
 #### 2. Build Dependencies from Lock File
 ```bash
-cd deployment/helm-charts/derkino-infrastructure
+cd infrastructure/helm-charts/derkino-infrastructure
 helm dependency build .
 ```
 
@@ -37,7 +37,7 @@ helm template --debug .
 1. Make changes to Helm charts or Ansible playbooks
 2. Test locally:
    ```bash
-   cd deployment/helm-charts/derkino-infrastructure
+   cd infrastructure/helm-charts/derkino-infrastructure
    helm dependency update .
    helm lint --with-subcharts .
    ```
@@ -56,7 +56,9 @@ helm template --debug .
 ### File Structure
 
 ```
-deployment/
+### File Structure
+
+infrastructure/
 ├── ansible/                    # Ansible playbooks and roles
 │   ├── deploy.yml             # Main deployment playbook
 │   ├── roles/
@@ -70,11 +72,11 @@ deployment/
 │       ├── Chart.lock         # Dependency lock file
 │       ├── values.yaml        # Default values
 │       ├── .gitignore         # Exclude downloaded dependencies
-│       └── charts/            # Subcharts
-│           ├── mongodb/
-│           ├── postgresql/
-│           ├── redis-stack/
-│           └── kafka/
+│   └── charts/            # Subcharts
+│       ├── mongodb/
+│       ├── postgresql/
+│       ├── redis-stack/
+│       └── kafka/
 └── secrets/                   # Encrypted secrets (not in repo)
 ```
 
@@ -82,7 +84,7 @@ deployment/
 
 #### Local Development
 ```bash
-cd deployment/ansible
+cd infrastructure/ansible
 ansible-playbook deploy.yml -e env=local
 ```
 
@@ -129,7 +131,7 @@ ansible-lint deploy.yml
 #### Dependency Issues
 If you encounter dependency warnings:
 ```bash
-cd deployment/helm-charts/derkino-infrastructure
+cd infrastructure/helm-charts/derkino-infrastructure
 helm dependency update .
 helm dependency build .
 ```
