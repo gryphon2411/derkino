@@ -116,10 +116,13 @@ ansible-lint deploy.yml
 
 ### Security
 
-- Secrets are managed via Ansible Vault
-- Downloaded Helm dependencies are excluded via `.gitignore`
-- All configurations are version-controlled
-- Dependencies are pinned via `Chart.lock` for reproducible builds
+- **Secure secret handling**: Secrets managed via Ansible Vault with `no_log: true` to prevent logging
+- **Non-root containers**: All infrastructure components run with `runAsNonRoot: true`
+- **StatefulSet for databases**: MongoDB and PostgreSQL use StatefulSet for stable storage and network identity
+- **Secret scanning**: CI pipeline includes TruffleHog to detect accidental secret commits
+- **Downloaded Helm dependencies excluded** via `.gitignore`
+- **All configurations version-controlled**
+- **Dependencies pinned** via `Chart.lock` for reproducible builds
 
 ### Troubleshooting
 

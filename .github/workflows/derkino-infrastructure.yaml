@@ -33,6 +33,18 @@ jobs:
       - name: Install Python Dependencies
         run: pip install yamllint
 
+      - name: Install Secret Scanner (TruffleHog)
+        run: |
+          # Install trufflehog for secret scanning
+          curl -sSL https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_linux_amd64 -o trufflehog
+          chmod +x trufflehog
+          ./trufflehog version
+
+      - name: Scan for Secrets
+        run: |
+          # Scan the entire repository for secrets
+          ./trufflehog filesystem . --only-verified --json | jq -r '.Detected' | grep -q 'true' && exit 1 || echo "No secrets detected"
+
       - name: Lint YAML Files
         run: yamllint deployment/ -c deployment/ansible/.yamllint
 
@@ -46,6 +58,11 @@ jobs:
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm dependency build deployment/helm-charts/derkino-infrastructure/
 
+      - name: Verify Chart.lock is Current
+        run: |
+          # Fail if Chart.lock was modified by dependency build
+          git diff --exit-code deployment/helm-charts/derkino-infrastructure/Chart.lock
+
       - name: Lint Helm Charts
         run: |
           helm lint --with-subcharts deployment/helm-charts/derkino-infrastructure/
@@ -56,6 +73,16 @@ jobs:
         uses: ansible/ansible-lint@v25.9.2
         with:
           working_directory: "deployment/ansible"
+
+      - name: Ansible Playbook Syntax Check
+        run: |
+          cd deployment/ansible
+          ansible-playbook --syntax-check deploy.yml -e "deployment_environment=local"
+
+      - name: Ansible Playbook Dry-Run
+        run: |
+          cd deployment/ansible
+          ansible-playbook --check deploy.yml -e "deployment_environment=local"
 
       - name: Validate Helm Templates
         run: |

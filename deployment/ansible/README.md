@@ -36,7 +36,10 @@ pip install <package-name>
 
 ### Running Ansible Playbooks
 
+**Important**: You must activate the Python virtual environment before running Ansible playbooks.
+
 ```bash
+# Activate the virtual environment
 source .venv/bin/activate
 
 # Run playbook with local inventory (using secure vault password)
@@ -154,30 +157,43 @@ broker |
 
 ## Secrets & Vault
 
-This project uses Ansible Vault for secrets. Vault files are stored encrypted and not committed in plain text.
+This project uses Ansible Vault for secure secret management. Secrets are loaded directly into memory from encrypted files or environment variables, avoiding plaintext exposure.
 
 ### Vault Usage
 
-**To edit encrypted secrets:**
+**For encrypted secrets files:**
 ```bash
-ansible-vault edit deployment/ansible/secrets/local/secrets.yml
+# Edit encrypted secrets file
+ansible-vault edit deployment/secrets/local/secrets.yml
+
+# Create new encrypted secrets file
+ansible-vault create deployment/secrets/local/secrets.yml
 ```
 
-**To create new encrypted secrets:**
+**For environment variable approach (recommended):**
 ```bash
-ansible-vault create deployment/ansible/secrets/local/secrets.yml
+# Set secrets as environment variables
+export ANSIBLE_VAULT_PASSWORD="your_vault_password"
+export vault_mongodb_root_password="your_mongodb_password"
+export vault_postgres_root_password="your_postgres_password"
+export vault_redis_default_password="your_redis_password"
+export vault_kafka_sasl_password="your_kafka_password"
+
+# Run playbook with environment variables
+ansible-playbook -i inventory/local deploy.yml
 ```
 
-**In CI, set the vault password as a secret and point to it via:**
+**In CI, set the vault password and secrets as GitHub Secrets:**
 ```bash
 ansible-playbook deploy.yml --vault-password-file /path/to/vault-pass
 ```
 
 ### Security Practices
 
-- Never commit plain vault password files
-- Use environment variables or secure vault password files
+- Never commit plaintext secrets or vault password files
+- Use environment variables for secrets when possible
 - Ensure proper file permissions (0600) for vault password files
+- Set `no_log: true` on tasks that handle sensitive data
 - Rotate vault passwords periodically for sensitive environments
 
 ## Role Documentation

@@ -17,6 +17,13 @@ $ source ./orchestrators/k8s/provision.sh
 
 The Derkino deployment system has been refactored to use a declarative Ansible/Helm workflow for consistent, repeatable deployments across environments.
 
+### Security Features
+
+- **Non-root containers**: All infrastructure components run with `runAsNonRoot: true`
+- **Secure secret handling**: Secrets managed via Ansible Vault with `no_log: true` to prevent logging
+- **Secret scanning**: CI pipeline includes TruffleHog to detect accidental secret commits
+- **StatefulSet for databases**: MongoDB and PostgreSQL use StatefulSet for stable storage and network identity
+
 ### Setup Instructions
 
 1. **Install dependencies** (one-time setup):
@@ -72,21 +79,25 @@ The Derkino deployment system has been refactored to use a declarative Ansible/H
 
 4. **Deploy to local environment**:
    ```bash
+   # Activate the Python virtual environment first
+   cd deployment/ansible
+   source .venv/bin/activate
+   
    # Deploy using Ansible with local environment
    # Choose one of these secure vault password methods:
    
    # Option 1: Environment variable
    export ANSIBLE_VAULT_PASSWORD="your_secure_local_password"
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local"
+   ansible-playbook -i inventory/local deploy.yml -e "environment=local"
    
    # Option 2: External password file
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-password-file ~/.derkino-local-vault-password
+   ansible-playbook -i inventory/local deploy.yml -e "environment=local" --vault-password-file ~/.derkino-local-vault-password
    
    # Option 3: Prompt for password
-   ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --ask-vault-pass
+   ansible-playbook -i inventory/local deploy.yml -e "environment=local" --ask-vault-pass
    
    # Use --check flag to test playbook execution without making changes
-   # ansible-playbook deployment/ansible/deploy.yml -i deployment/ansible/inventory/local -e "environment=local" --vault-password-file ~/.derkino-local-vault-password --check
+   # ansible-playbook -i inventory/local deploy.yml -e "environment=local" --vault-password-file ~/.derkino-local-vault-password --check
    ```
 
 5. **Deploy to dev environment**:

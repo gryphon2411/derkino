@@ -18,9 +18,22 @@ spec:
       labels:
         app: {{ .Values.statefulset.name }}
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
       - name: {{ .Values.statefulset.name }}
         image: {{ .Values.statefulset.image.repository }}:{{ .Values.statefulset.image.tag }}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         ports:
         - name: default
           containerPort: {{ .Values.statefulset.containerPorts.default }}
