@@ -28,17 +28,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Using a more current Python version
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Ansible and Dependencies
-        run: |
-          pip install ansible ansible-lint yamllint
-          ansible-galaxy collection install -r deployment/ansible/collections/requirements.yml
+          python-version: '3.11'         
 
       - name: Scan for Secrets with TruffleHog
         uses: trufflesecurity/trufflehog@v3.90.11
@@ -49,7 +39,9 @@ jobs:
           extra_args: --only-verified
 
       - name: Lint YAML Files
-        run: yamllint deployment/ -c deployment/ansible/.yamllint
+        run: |
+          pip install yamllint
+          yamllint deployment/ -c deployment/ansible/.yamllint
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
@@ -72,6 +64,13 @@ jobs:
           helm lint deployment/helm-charts/derkino-services/
           helm lint deployment/helm-charts/derkino-ui/
 
+      - name: Validate Helm Templates
+        run: |
+          # The "helm template" command is a great smoke test for chart syntax
+          helm template test-infra deployment/helm-charts/derkino-infrastructure/ > /dev/null
+          helm template test-services deployment/helm-charts/derkino-services/ > /dev/null
+          helm template test-ui deployment/helm-charts/derkino-ui/ > /dev/null
+
       - name: Validate Ansible Playbooks
         uses: ansible/ansible-lint@v25.9.2
         with:
@@ -79,12 +78,7 @@ jobs:
 
       - name: Ansible Playbook Syntax Check
         run: |
+          pip install ansible
+          ansible-galaxy collection install -r deployment/ansible/collections/requirements.yml
           cd deployment/ansible
           ansible-playbook --syntax-check deploy.yml -e "deployment_environment=local"
-
-      - name: Validate Helm Templates
-        run: |
-          # The "helm template" command is a great smoke test for chart syntax
-          helm template test-infra deployment/helm-charts/derkino-infrastructure/ > /dev/null
-          helm template test-services deployment/helm-charts/derkino-services/ > /dev/null
-          helm template test-ui deployment/helm-charts/derkino-ui/ > /dev/null
