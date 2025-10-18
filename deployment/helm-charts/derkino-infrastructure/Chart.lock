@@ -11,5 +11,5 @@ dependencies:
 - name: kafka
   repository: file://charts/kafka
   version: 0.1.0
-digest: sha256:d06142f61fa8f6ff91a5ef9b4214937414a502f07c08442cf3dec7def0de38f5
-generated: "2025-10-16T15:43:51.81107749+03:00"
+digest: sha256:7388ef14c89b009a1e84e1bf4be1513691cf34cdacd2d2af94d9e7d13903dc63
+generated: "2025-10-18T10:16:20.686754502+03:00"

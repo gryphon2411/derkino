@@ -18,65 +18,79 @@
 
 - name: Deploy MongoDB via Helm
   block:
-    - name: Install/Upgrade MongoDB
+    - name: Install/Upgrade MongoDB (helm)
       ansible.builtin.command: >
-        helm upgrade --install mongodb derkino-infrastructure/mongodb
+        helm upgrade --install mongodb {{ helm_charts_path }}/charts/mongodb
         --namespace {{ helm_infrastructure_namespace }}
+        --create-namespace
         --values {{ helm_charts_path }}/charts/mongodb/values.yaml
+        --atomic --wait --timeout 600s
+      register: helm_mongodb_result
+      failed_when: helm_mongodb_result.rc != 0
+      changed_when: >
+        '(installed|deployed|upgraded)' in helm_mongodb_result.stdout or
+        helm_mongodb_result.rc == 0 and helm_mongodb_result.changed | default(false)
       notify:
         - wait for mongodb
         - test mongodb connectivity
-      changed_when: false
 
   rescue:
-    - name: Rollback MongoDB deployment
+    - name: Attempt helm rollback for mongodb
       ansible.builtin.command: >
-        helm uninstall mongodb --namespace {{ helm_infrastructure_namespace }}
+        helm rollback mongodb --namespace {{ helm_infrastructure_namespace }} 1
       register: helm_mongodb_rollback_result
-      changed_when: false
-      ignore_errors: true
+      failed_when: helm_mongodb_rollback_result.rc != 0
 
-    - name: Notify MongoDB rollback status
+    - name: Show rollback output
       ansible.builtin.debug:
-        msg: "MongoDB deployment failed. Rollback status: {{ helm_mongodb_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
-      changed_when: false
+        var: helm_mongodb_rollback_result.stdout_lines
 
 - name: Deploy PostgreSQL via Helm
   block:
-    - name: Install/Upgrade PostgreSQL
+    - name: Install/Upgrade PostgreSQL (helm)
       ansible.builtin.command: >
-        helm upgrade --install postgresql derkino-infrastructure/postgresql
+        helm upgrade --install postgresql {{ helm_charts_path }}/charts/postgresql
         --namespace {{ helm_infrastructure_namespace }}
+        --create-namespace
         --values {{ helm_charts_path }}/charts/postgresql/values.yaml
+        --atomic --wait --timeout 600s
+      register: helm_postgresql_result
+      failed_when: helm_postgresql_result.rc != 0
+      changed_when: >
+        '(installed|deployed|upgraded)' in helm_postgresql_result.stdout or
+        helm_postgresql_result.rc == 0 and helm_postgresql_result.changed | default(false)
       notify:
         - wait for postgresql
         - test postgresql connectivity
-      changed_when: false
 
   rescue:
-    - name: Rollback PostgreSQL deployment
+    - name: Attempt helm rollback for postgresql
       ansible.builtin.command: >
-        helm uninstall postgresql --namespace {{ helm_infrastructure_namespace }}
+        helm rollback postgresql --namespace {{ helm_infrastructure_namespace }} 1
       register: helm_postgresql_rollback_result
-      changed_when: false
-      ignore_errors: true
+      failed_when: helm_postgresql_rollback_result.rc != 0
 
-    - name: Notify PostgreSQL rollback status
+    - name: Show rollback output
       ansible.builtin.debug:
-        msg: "PostgreSQL deployment failed. Rollback status: {{ helm_postgresql_rollback_result.rc == 0 | ternary('Successful', 'Failed') }}"
-      changed_when: false
+        var: helm_postgresql_rollback_result.stdout_lines
 
 - name: Deploy Redis-Stack via Helm
   block:
-    - name: Install/Upgrade Redis-Stack
+    - name: Install/Upgrade Redis-Stack (helm)
       ansible.builtin.command: >
-        helm upgrade --install redis-stack derkino-infrastructure/redis-stack
+        helm upgrade --install redis-stack {{ helm_charts_path }}/charts/redis-stack
         --namespace {{ helm_infrastructure_namespace }}
+        --create-namespace
         --values {{ helm_charts_path }}/charts/redis-stack/values.yaml
+        --atomic --wait --timeout 600s
+      register: helm_redis_stack_result
+      failed_when: helm_redis_stack_result.rc != 0
+      changed_when: >
+        '(installed|deployed|upgraded)' in helm_redis_stack_result.stdout or
+        helm_redis_stack_result.rc == 0 and helm_redis_stack_result.changed | default(false)
       notify:
         - wait for redis-stack
         - test redis connectivity
-      changed_when: false
 
   rescue:
     - name: Rollback Redis-Stack deployment
@@ -93,15 +107,21 @@
 
 - name: Deploy Kafka via Helm
   block:
-    - name: Install/Upgrade Kafka
+    - name: Install/Upgrade Kafka (helm)
       ansible.builtin.command: >
-        helm upgrade --install kafka derkino-infrastructure/kafka
+        helm upgrade --install kafka {{ helm_charts_path }}/charts/kafka
         --namespace {{ helm_infrastructure_namespace }}
+        --create-namespace
         --values {{ helm_charts_path }}/charts/kafka/values.yaml
+        --atomic --wait --timeout 600s
+      register: helm_kafka_result
+      failed_when: helm_kafka_result.rc != 0
+      changed_when: >
+        '(installed|deployed|upgraded)' in helm_kafka_result.stdout or
+        helm_kafka_result.rc == 0 and helm_kafka_result.changed | default(false)
       notify:
         - wait for kafka
         - test kafka connectivity
-      changed_when: false
 
   rescue:
     - name: Rollback Kafka deployment

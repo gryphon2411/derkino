@@ -14,6 +14,7 @@ kafka:
 # These values override the Bitnami chart defaults
 image:
   repository: bitnamilegacy/kafka
+  tag: "3.3.2"
 
 service:
   type: NodePort

@@ -35,7 +35,7 @@ dependencies:
   - name: redis-stack
     version: "0.1.0"
     repository: "file://charts/redis-stack"
-    condition: redisStack.enabled
+    condition: redis-stack.enabled
   - name: kafka
     version: "0.1.0"
     repository: "file://charts/kafka"

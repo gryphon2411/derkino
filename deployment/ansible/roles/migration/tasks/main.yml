@@ -49,17 +49,20 @@
   when: migration_existing_infrastructure.stdout != ""
   changed_when: false
 
-- name: Test connectivity to parallel infrastructure
+- name: Test connectivity to parallel infrastructure (minimal tester)
   ansible.builtin.command: >
-    kubectl exec deployment/{{ item }} -n {{ migration_parallel_namespace }}
-    -- {{ item.test_command }}
+    kubectl run test-{{ item.name }} --rm --attach --restart=Never
+    -n {{ migration_parallel_namespace }}
+    --image={{ item.test_image }}
+    --command -- /bin/sh -c "{{ item.test_command }}"
   with_items:
-    - {name: mongodb, test_command: "mongosh --eval 'db.adminCommand({ping: 1})'"}
-    - {name: postgresql, test_command: "psql -U postgres -c 'SELECT 1;'"}
-    - {name: redis-stack, test_command: "redis-cli ping"}
-    - {name: kafka, test_command: "kafka-topics.sh --bootstrap-server localhost:9092 --list"}
+    - { name: mongodb, test_image: mongo:6.0, test_command: "mongosh --eval 'db.adminCommand({ping:1})'" }
+    - { name: postgresql, test_image: postgres:14, test_command: "psql -U postgres -c 'SELECT 1;'" }
+    - { name: redis-stack, test_image: redis:7, test_command: "redis-cli -h redis PING" }
+    - { name: kafka, test_image: bitnami/kafka:3.3.1, test_command: "kafka-topics.sh --bootstrap-server localhost:9092 --list" }
+  register: migration_connectivity_checks
+  failed_when: migration_connectivity_checks.rc != 0
   when: "migration_existing_infrastructure is defined and migration_existing_infrastructure.stdout != ''"
-  changed_when: false
 
 - name: Switch traffic to Helm infrastructure
   block:

@@ -152,6 +152,34 @@ broker |
 "deployment_environment=local"`
 5. **Commit changes**: Git will ignore virtual environment files
 
+## Secrets & Vault
+
+This project uses Ansible Vault for secrets. Vault files are stored encrypted and not committed in plain text.
+
+### Vault Usage
+
+**To edit encrypted secrets:**
+```bash
+ansible-vault edit deployment/ansible/secrets/local/secrets.yml
+```
+
+**To create new encrypted secrets:**
+```bash
+ansible-vault create deployment/ansible/secrets/local/secrets.yml
+```
+
+**In CI, set the vault password as a secret and point to it via:**
+```bash
+ansible-playbook deploy.yml --vault-password-file /path/to/vault-pass
+```
+
+### Security Practices
+
+- Never commit plain vault password files
+- Use environment variables or secure vault password files
+- Ensure proper file permissions (0600) for vault password files
+- Rotate vault passwords periodically for sensitive environments
+
 ## Role Documentation
 
 ### Helm Role
